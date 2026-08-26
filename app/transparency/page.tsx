@@ -59,6 +59,21 @@ const ROWS: Row[] = [
     note: 'Invented. Chosen to be plausible: the ₹4,180 water arrear is the kind of number that actually surfaces at a counter after registration.',
   },
   {
+    thing: 'The ward map, pipes and feeders',
+    state: 'mock',
+    note: 'Every coordinate, diameter, laid-year and condition rating is invented. It is a schematic drawn from a small graph in lib/dept.ts, not survey geometry, and it is not the shape of Padmanabhanagar. No tile provider is contacted.',
+  },
+  {
+    thing: 'Works, tenders and costs',
+    state: 'mock',
+    note: 'Invented work orders, tender references and figures in lakh. Shaped to be plausible; none corresponds to a real BWSSB or BESCOM work.',
+  },
+  {
+    thing: 'Assessment gap counts',
+    state: 'partial',
+    note: 'The numbers are invented. The mechanism is real: a utility connection at an address with no matching tax assessment is a genuine signal, and no system currently joins those two rolls because there is no shared key to join them on.',
+  },
+  {
     thing: 'Department APIs',
     state: 'mock',
     note: 'There are none. No request leaves this app to BBMP, BESCOM, BWSSB or Sakala. The hackathon brief prohibits real integrations, and we would not have had access anyway.',
@@ -154,6 +169,28 @@ export default function Transparency() {
             address and ward — what you can read off the gate. Holder names,
             account references and arrears need a second fact you could only
             have if you hold the document.
+          </p>
+        </div>
+
+        <div id="dept" className="card card-pad stack stack-2">
+          <h3 className="h3">2b. A department view that cannot name anyone</h3>
+          <p className="small ink2">
+            Adding a department screen is where the forward-verification rule
+            usually quietly dies, so it is worth being precise about what we
+            did. The ward view is keyed on infrastructure — pipes, feeders,
+            stretches of road — not on people. It carries no owner name, no
+            property list, and no filter that would produce one.
+          </p>
+          <p className="small ink2">
+            Assessment gaps are the sharp case. &ldquo;A connection with no
+            matching tax assessment&rdquo; is genuinely useful to a revenue
+            department and genuinely dangerous as a list. We report it as a
+            count on a named stretch — enough to send a surveyor down that road,
+            not enough to hand anyone a list of households. The rows do not
+            expand, there is no export, and there is no endpoint behind them
+            that returns one. Finding the specific property stays the
+            department&rsquo;s job, through its own due process and its own
+            accountability for doing it.
           </p>
         </div>
 

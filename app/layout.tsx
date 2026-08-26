@@ -41,9 +41,14 @@ export default function RootLayout({
             <a className="wordmark" href="/">
               Handover<span>Prototype</span>
             </a>
-            <a className="xs muted" href="/transparency" style={{ textDecoration: 'none' }}>
-              What&rsquo;s mocked
-            </a>
+            <nav className="row" style={{ gap: 'var(--sp-3)' }}>
+              <a className="xs muted" href="/dept" style={{ textDecoration: 'none' }}>
+                Department view
+              </a>
+              <a className="xs muted" href="/transparency" style={{ textDecoration: 'none' }}>
+                What&rsquo;s mocked
+              </a>
+            </nav>
           </header>
           <main id="main">{children}</main>
         </div>
