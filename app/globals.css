@@ -1,0 +1,563 @@
+/* ---------------------------------------------------------------------------
+   Handover — design system
+
+   Two failure modes we are avoiding on purpose:
+     1. The government portal. Blue gradients, marquee text, table soup,
+        five typefaces, a seal in the corner.
+     2. The default AI editorial look. Cream paper, terracotta accent,
+        oversized serif, lots of air and no information.
+
+   Neither reads as a trustworthy civic tool. What we want instead is closer to
+   a well-set utility bill or a bank statement: quiet, dense where it needs to
+   be, and completely unambiguous about state.
+
+   Rule we held: colour is reserved for STATE. Nothing else in the interface is
+   coloured. Actions are black. Chrome is grey. If something is green, amber or
+   red, it is telling you about a track, and you can trust that.
+--------------------------------------------------------------------------- */
+
+:root {
+  --paper: #faf9f7;
+  --card: #ffffff;
+  --ink: #14151a;
+  --ink-2: #43464e;
+  --ink-3: #74777f;
+  --rule: #e4e2dd;
+  --rule-strong: #cfccc5;
+
+  /* State. The only colour in the product. */
+  --run: #0d6b57;
+  --run-bg: #e8f3ef;
+  --block: #8a5300;
+  --block-bg: #fbf1e0;
+  --breach: #a72a20;
+  --breach-bg: #fbeae8;
+  --done: #0d6b57;
+  --done-bg: #e8f3ef;
+  --idle: #6b6e76;
+  --idle-bg: #f0efec;
+
+  --focus: #1c53d6;
+
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Noto Sans Kannada', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+
+  /* Type scale, 1.25. Set once, used everywhere. */
+  --t-xs: 0.75rem;
+  --t-sm: 0.8125rem;
+  --t-base: 0.9375rem;
+  --t-md: 1.0625rem;
+  --t-lg: 1.3125rem;
+  --t-xl: 1.6875rem;
+  --t-2xl: 2.125rem;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+
+  --radius: 6px;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--t-base);
+  line-height: 1.55;
+  font-feature-settings: 'tnum' 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Kannada needs its own line height or it clips. */
+:lang(kn), .kn { font-family: 'Noto Sans Kannada', var(--font-body); line-height: 1.75; }
+
+h1, h2, h3, h4 { margin: 0; font-weight: 600; line-height: 1.2; letter-spacing: -0.011em; }
+p { margin: 0; }
+a { color: inherit; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* --- layout --------------------------------------------------------------- */
+
+.shell {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 var(--sp-4) var(--sp-7);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4) 0;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: var(--sp-5);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: var(--t-md);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+}
+.wordmark span { color: var(--ink-3); font-family: var(--font-body); font-size: var(--t-xs); letter-spacing: 0.04em; text-transform: uppercase; margin-left: var(--sp-2); }
+
+.stack { display: flex; flex-direction: column; }
+.stack-2 > * + * { margin-top: var(--sp-2); }
+.stack-3 > * + * { margin-top: var(--sp-3); }
+.stack-4 > * + * { margin-top: var(--sp-4); }
+.stack-5 > * + * { margin-top: var(--sp-5); }
+.stack-6 > * + * { margin-top: var(--sp-6); }
+
+.row { display: flex; align-items: center; gap: var(--sp-2); }
+.row-between { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+.wrap { flex-wrap: wrap; }
+.grow { flex: 1 1 auto; min-width: 0; }
+
+/* --- type ----------------------------------------------------------------- */
+
+.display { font-family: var(--font-display); font-weight: 400; font-size: var(--t-xl); line-height: 1.15; letter-spacing: -0.01em; }
+.display-lg { font-family: var(--font-display); font-weight: 400; font-size: var(--t-2xl); line-height: 1.1; letter-spacing: -0.015em; }
+.h2 { font-size: var(--t-md); font-weight: 600; }
+.h3 { font-size: var(--t-base); font-weight: 600; }
+.small { font-size: var(--t-sm); }
+.xs { font-size: var(--t-xs); }
+.muted { color: var(--ink-3); }
+.ink2 { color: var(--ink-2); }
+.mono { font-family: var(--font-mono); font-size: 0.9em; letter-spacing: -0.01em; }
+.tnum { font-variant-numeric: tabular-nums; }
+
+.eyebrow {
+  font-size: var(--t-xs);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+/* --- the mocked-data marker ----------------------------------------------- */
+/* Every invented value in the product carries this. One marker, used
+   consistently, is more convincing than a disclaimer nobody reads. */
+
+.mock {
+  border-bottom: 1px dotted var(--rule-strong);
+  cursor: help;
+}
+.mock::after {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  vertical-align: super;
+  margin-left: 3px;
+}
+
+/* --- surfaces ------------------------------------------------------------- */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+.card-pad { padding: var(--sp-4); }
+.card + .card { margin-top: var(--sp-3); }
+
+.divider { height: 1px; background: var(--rule); border: 0; margin: 0; }
+
+/* --- controls ------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 46px;
+  padding: 0 var(--sp-4);
+  border-radius: var(--radius);
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--t-base);
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.12s ease;
+}
+.btn:hover { opacity: 0.85; }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-block { width: 100%; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--rule-strong);
+}
+.btn-ghost:hover { background: #f2f1ee; opacity: 1; }
+
+.btn-sm { min-height: 36px; padding: 0 var(--sp-3); font-size: var(--t-sm); }
+
+/* The one exception to "actions are black": claiming compensation on a
+   breached SLA. It is the only place the interface takes a side. */
+.btn-breach { background: var(--breach); border-color: var(--breach); color: #fff; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: var(--t-sm); font-weight: 500; color: var(--ink-2); }
+.input, .textarea, .select {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px var(--sp-3);
+  background: var(--card);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  font-size: var(--t-md);
+}
+.textarea { min-height: 110px; resize: vertical; font-size: var(--t-base); line-height: 1.5; }
+.input::placeholder, .textarea::placeholder { color: #a5a7ad; }
+
+/* --- state pills ---------------------------------------------------------- */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px 3px 7px;
+  border-radius: 100px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.pill-run { color: var(--run); background: var(--run-bg); }
+.pill-block { color: var(--block); background: var(--block-bg); }
+.pill-breach { color: var(--breach); background: var(--breach-bg); }
+.pill-done { color: var(--done); background: var(--done-bg); }
+.pill-idle { color: var(--idle); background: var(--idle-bg); }
+
+/* --- the three-track view: the one place we spend boldness ---------------- */
+
+.track {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule-strong);
+  border-radius: var(--radius);
+  padding: var(--sp-4);
+}
+.track-run { border-left-color: var(--run); }
+.track-block { border-left-color: var(--block); }
+.track-breach { border-left-color: var(--breach); }
+.track-done { border-left-color: var(--done); }
+
+.clock {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-variant-numeric: tabular-nums;
+}
+.clock-num {
+  font-family: var(--font-display);
+  font-size: var(--t-2xl);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.clock-unit { font-size: var(--t-sm); color: var(--ink-3); }
+
+.meter {
+  height: 5px;
+  background: var(--rule);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.meter > i { display: block; height: 100%; background: var(--run); border-radius: 100px; }
+.meter-breach > i { background: var(--breach); }
+
+/* Responsibility line. Every track answers: who has it, and by when. */
+.respons {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px var(--sp-3);
+  font-size: var(--t-sm);
+}
+.respons dt { color: var(--ink-3); }
+.respons dd { margin: 0; }
+
+/* --- next-step callout ---------------------------------------------------- */
+
+.next {
+  border-radius: var(--radius);
+  padding: var(--sp-3);
+  background: var(--block-bg);
+  border: 1px solid #eddcbd;
+}
+.next-breach { background: var(--breach-bg); border-color: #f2cfcb; }
+
+/* --- grievance thread ----------------------------------------------------- */
+
+.thread { position: relative; padding-left: var(--sp-5); }
+.thread::before {
+  content: '';
+  position: absolute;
+  left: 5px; top: 6px; bottom: 6px;
+  width: 1px;
+  background: var(--rule-strong);
+}
+.thread-item { position: relative; }
+.thread-item::before {
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--sp-5) + 2px);
+  top: 7px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1.5px solid var(--rule-strong);
+}
+.thread-item-now::before { background: var(--ink); border-color: var(--ink); }
+
+/* --- misc ----------------------------------------------------------------- */
+
+.notice {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: #f3f2ef;
+  padding: var(--sp-3);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.footer {
+  border-top: 1px solid var(--rule);
+  margin-top: var(--sp-7);
+  padding-top: var(--sp-4);
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+.footer a { color: var(--ink-2); }
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: var(--sp-4); top: var(--sp-2);
+  position: fixed; z-index: 10;
+  background: var(--ink); color: #fff;
+  padding: var(--sp-2) var(--sp-3); border-radius: var(--radius);
+}
+
+/* Desktop is the afterthought, as promised. It just gets more room. */
+@media (min-width: 720px) {
+  .shell { max-width: 640px; padding-top: var(--sp-2); }
+  .display-lg { font-size: 2.5rem; }
+}
+
+/* ---------------------------------------------------------------------------
+   Pass 2 — refinements
+--------------------------------------------------------------------------- */
+
+/* A disabled primary action was a heavy grey slab, which reads as an error
+   state rather than "not yet". Recede it instead of greying it. */
+.btn:disabled {
+  opacity: 1;
+  background: transparent;
+  color: var(--ink-3);
+  border-color: var(--rule);
+  cursor: not-allowed;
+}
+.btn-ghost:disabled { background: transparent; color: var(--ink-3); border-color: var(--rule); }
+
+.btn:not(:disabled):active { transform: translateY(1px); }
+
+/* --- THE KEY STRIP -------------------------------------------------------- */
+/* The pitch, made visual.
+   The object screen was a competent list of three cards. It did not show the
+   actual problem, which is that four systems hold four unrelated identifiers
+   for one flat and none of them can be derived from another. Stacking the four
+   keys makes that legible in about a second — you can see they do not match
+   without being told. */
+
+.keys {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--card);
+  overflow: hidden;
+}
+.keys-head {
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--rule);
+  background: #f3f2ef;
+}
+.key-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: var(--sp-3) var(--sp-4);
+}
+.key-row + .key-row { border-top: 1px solid var(--rule); }
+.key-who {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  letter-spacing: 0.02em;
+}
+.key-who strong { color: var(--ink-2); font-weight: 600; }
+.key-val {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  letter-spacing: -0.02em;
+  background: #f0efec;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 3px 7px;
+  word-break: break-all;
+}
+.keys-foot {
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--rule);
+  background: #f3f2ef;
+  font-size: var(--t-xs);
+  color: var(--ink-2);
+}
+
+/* --- headline number ------------------------------------------------------ */
+/* The "across all three" figure is the highest-value glance on the object
+   screen and it was styled like a caption. */
+
+.headline {
+  font-family: var(--font-display);
+  font-size: var(--t-2xl);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.headline-warn { color: var(--block); }
+
+/* --- binding card hierarchy ----------------------------------------------- */
+/* Four rows of equal weight made the citizen read all four to find the two
+   that matter: whose name is on it, and what is owed. */
+
+.binding-holder {
+  font-size: var(--t-md);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.binding-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 9px;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+.binding-meta > span { white-space: nowrap; }
+/* Without a separator these ran together into one unreadable string:
+   "SAS Application Number 2024-25-MOCK-31905 updated 6 days ago nothing owing" */
+.binding-meta > span + span::before {
+  content: '·';
+  margin-right: 9px;
+  color: var(--rule-strong);
+}
+.binding-owed {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  color: var(--block);
+}
+
+/* --- mock marker, lighter -------------------------------------------------- */
+/* A dotted underline beneath 27px Instrument Serif was heavier than the type
+   it was annotating. On display-size text the dot alone carries it. */
+
+.display .mock,
+.display-lg .mock,
+.headline .mock,
+.binding-owed .mock {
+  border-bottom: 0;
+}
+.display .mock::after,
+.display-lg .mock::after,
+.headline .mock::after,
+.binding-owed .mock::after {
+  width: 4px;
+  height: 4px;
+  opacity: 0.45;
+  margin-left: 5px;
+}
+
+/* --- pressable cards ------------------------------------------------------- */
+
+.card-press {
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.card-press:hover { border-color: var(--rule-strong); background: #fdfdfc; }
+.card-press:active { background: #f5f4f1; }
+
+/* --- details disclosures --------------------------------------------------- */
+
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before {
+  content: '＋';
+  display: inline-block;
+  width: 1.1em;
+  color: var(--ink-3);
+  font-weight: 400;
+}
+details[open] > summary::before { content: '－'; }
+
+/* --- checkbox tap targets -------------------------------------------------- */
+
+input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+
+/* --- form controls --------------------------------------------------------- */
+
+.input:focus, .textarea:focus { border-color: var(--ink-2); }
+
+/* --- section headings ------------------------------------------------------ */
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--rule);
+}
