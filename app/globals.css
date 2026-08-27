@@ -561,3 +561,125 @@ input[type='checkbox'] {
   padding-bottom: var(--sp-2);
   border-bottom: 1px solid var(--rule);
 }
+
+/* ---------------------------------------------------------------------------
+   Department view
+--------------------------------------------------------------------------- */
+
+/* A documented exception to "colour is reserved for state".
+   On the citizen side, colour always means a track's state, and that rule is
+   what makes green/amber/red trustworthy there. On the ward map, network
+   identity is the primary information — which pipe is which — so lines carry
+   network colour and markers carry state. They are different object types with
+   their own legend, so the two systems do not collide. These three hues were
+   chosen to sit clear of the state palette. */
+:root {
+  --net-water: #235fa8;
+  --net-sewer: #6d4a9c;
+  --net-power: #9a7b10;
+  --map-road: #ddd9d1;
+  --map-lake: #dfe8ee;
+  --map-ground: #fbfaf8;
+}
+
+.map-wrap {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--map-ground);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.map-wrap svg { display: block; min-width: 560px; width: 100%; height: auto; }
+
+.map-hint {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-top: 1px solid var(--rule);
+}
+
+/* Toggles read as switches, not as primary actions. */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 11px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 100px;
+  background: var(--card);
+  font-size: var(--t-sm);
+  cursor: pointer;
+  user-select: none;
+}
+.toggle[aria-pressed='false'] { color: var(--ink-3); border-color: var(--rule); }
+.toggle-swatch {
+  width: 12px; height: 3px; border-radius: 2px; flex: none;
+  background: currentColor;
+}
+.toggle[aria-pressed='false'] .toggle-swatch { opacity: 0.35; }
+.toggle-water[aria-pressed='true'] { color: var(--net-water); border-color: var(--net-water); }
+.toggle-sewer[aria-pressed='true'] { color: var(--net-sewer); border-color: var(--net-sewer); }
+.toggle-power[aria-pressed='true'] { color: var(--net-power); border-color: var(--net-power); }
+
+/* The finding banner — the one number this screen exists to produce. */
+.finding {
+  border: 1px solid #f2cfcb;
+  border-left: 3px solid var(--breach);
+  background: var(--breach-bg);
+  border-radius: var(--radius);
+  padding: var(--sp-4);
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.stat {
+  background: var(--card);
+  padding: var(--sp-3) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.stat-num {
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+/* Works list */
+.work {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: var(--sp-3) var(--sp-4);
+}
+.work-completed { border-left-color: var(--done); }
+.work-in_progress { border-left-color: var(--run); }
+.work-upcoming { border-left-color: var(--rule-strong); }
+
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.seg button {
+  border: 0;
+  background: var(--card);
+  padding: 8px 12px;
+  font-size: var(--t-sm);
+  cursor: pointer;
+  min-height: 38px;
+}
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button[aria-pressed='true'] { background: var(--ink); color: #fff; font-weight: 500; }

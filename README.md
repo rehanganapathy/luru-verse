@@ -66,6 +66,7 @@ lib/sakala.ts            Working-day arithmetic, GSC numbers, s.5 compensation.
 lib/ledger.ts            Where state lives: the citizen's device, not our server.
 lib/ai.ts                Two model calls, and the fallback that makes them optional.
 lib/fixtures.ts          Three seeded properties. Everything in here is invented.
+lib/dept.ts              The ward: network graph, works, clusters, coverage gaps.
 ```
 
 ### Three design constraints
@@ -85,6 +86,40 @@ hold the document.
 **Revocable, not bearer.** The object is not a token. Holding it does not mean
 owning the flat. Disputed transfers route to a human officer, the way BBMP's
 auto-mutation already does. Property law is built on reversibility.
+
+### The department view
+
+`/dept` is keyed on infrastructure rather than on a property: pipes, feeders,
+stretches of road, and the works that touch them. It exists to make the
+adoption argument concrete rather than asserted.
+
+Two things it produces that no department can get today:
+
+**Complaints against the works programme.** The map marks complaint clusters
+and rings the ones no current or tendered work touches. In the seeded ward that
+is exactly one — a 1987 sewer trunk rated critical, with nine open complaints,
+four of them reopened, falling to the kere, and absent from the capex list.
+The complaint system and the works programme are separate systems that have
+never been asked the same question, so this can happen without anyone doing
+anything wrong.
+
+**Assessment gaps.** A live utility connection at an address with no matching
+property tax assessment is, on the face of it, a missing assessment. Nobody
+builds this today because it needs a join between a connection list and an
+assessment roll, and there is no shared key to join them on. Keying on the
+property produces it as a side effect.
+
+The map is an inline SVG drawn from a small graph, not a tile layer. A tile
+provider would be an external service receiving our ward queries, which cuts
+against the premise; and a 40 KB SVG loads where a tile layer does not.
+
+**What it deliberately cannot do.** No owner name appears anywhere on the
+screen. There is no property list and no filter that would produce one.
+Assessment gaps are reported as counts on a named stretch — enough to send a
+surveyor down that road, not enough to hand anyone a list of households. The
+rows do not expand, there is no export, and no endpoint behind them returns
+one. "Show me who has power but has not paid tax" is a name-and-shame query,
+and the structure that answers it answers far worse questions too.
 
 ### The Sakala lever
 
@@ -121,6 +156,7 @@ no statutory countdown rather than an invented one.
 | `/property/[epid]/handover` | Consent, then three parallel tracks with live Sakala clocks |
 | `/property/[epid]/handover/claim` | Pre-filled s.5 compensation appeal |
 | `/property/[epid]/grievance` | Append-only threads keyed on the property |
+| `/dept` | Department view: ward map, works, assessment gaps |
 | `/transparency` | What's real and what's mocked |
 
 ## What is deliberately not here
