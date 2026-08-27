@@ -11,26 +11,44 @@ import { Mock } from './ui'
  * a second without narration.
  */
 export function KeyStrip({ property }: { property: PropertyObject }) {
+  const ref = (id: string) =>
+    property.bindings.find((b) => b.serviceId === id)?.accountRef ?? '—'
+
   const rows = [
     {
       who: 'Sub-registrar',
       calls: 'Document number',
       value: property.registrationDocNo,
+      same: false,
     },
     {
-      who: 'BBMP',
-      calls: property.bindings[0]?.accountLabel ?? 'SAS Application Number',
-      value: property.bindings[0]?.accountRef ?? '—',
+      who: 'BBMP Revenue',
+      calls: 'SAS Application Number',
+      value: ref('bbmp-tax'),
+      same: false,
     },
     {
       who: 'BESCOM',
       calls: 'RR Number',
-      value: property.bindings[1]?.accountRef ?? '—',
+      value: ref('bescom'),
+      same: false,
     },
     {
       who: 'BWSSB',
       calls: 'RR Number',
-      value: property.bindings[2]?.accountRef ?? '—',
+      value: ref('bwssb'),
+      same: false,
+    },
+    {
+      // The exception, and it is worth the extra row. Four of these five
+      // cannot be derived from each other; the fifth is simply the second one
+      // again, because BBMP's waste wing bills on its revenue wing's number.
+      // Seeing the same string twice is the argument: where a key is already
+      // shared, the transfer problem does not exist.
+      who: 'BBMP Solid Waste',
+      calls: 'the same SAS number',
+      value: ref('bbmp-swm'),
+      same: true,
     },
   ]
 
@@ -48,16 +66,28 @@ export function KeyStrip({ property }: { property: PropertyObject }) {
           <div className="key-who">
             <strong>{r.who}</strong> calls it {r.calls}
           </div>
-          <span className="key-val">
+          <span className="key-val" style={r.same ? { opacity: 0.65 } : undefined}>
             <Mock what="Mock identifier">{r.value}</Mock>
           </span>
+          {r.same && (
+            <span className="xs muted">
+              Not a fifth key. The second one again.
+            </span>
+          )}
         </div>
       ))}
 
       <p className="keys-foot">
-        No two of these can be derived from another. There is no shared key — so
-        today, you are the shared key. You carry the document from counter to
-        counter and prove the same fact four times.
+        No two of the first four can be derived from another. There is no shared
+        key — so today, you are the shared key: you carry the document from
+        counter to counter and prove the same fact four times.
+        <br />
+        <br />
+        The fifth row is the control. BBMP&rsquo;s waste wing bills the SWM user
+        fee on its revenue wing&rsquo;s number, so it is not a separate key at
+        all — and that leg of a handover needs no application, no bond and no
+        counter. Nobody built an integration to achieve that. They just used
+        the same number.
       </p>
     </section>
   )

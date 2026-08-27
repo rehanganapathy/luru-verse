@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------------------
-   Handover — design system
+   Luruverse — design system
 
    Two failure modes we are avoiding on purpose:
      1. The government portal. Blue gradients, marquee text, table soup,
@@ -11,63 +11,141 @@
    a well-set utility bill or a bank statement: quiet, dense where it needs to
    be, and completely unambiguous about state.
 
+   The system was resolved on a design canvas — the file is still called
+   "Handover Landing", from before the product was named — and the values below
+   are that canvas's, adopted wholesale so that the landing and the app are
+   demonstrably one product:
+
+     - One typeface with a real range (Archivo) instead of a serif display face
+       paired with a UI sans. Two families were doing the work of two voices;
+       weight and tracking do it more quietly.
+     - A mono (JetBrains Mono) that carries every identifier, every micro-label
+       and every figure — so anything a department would print on a bill looks
+       like it came off a bill.
+     - Paper cooled from warm cream to a green-grey. Cream reads editorial; this
+       reads municipal, and it lets the state colours stay the only warmth.
+     - Structure carried by hairlines rather than by boxes. A black rule under a
+       section heading, a grey rule between rows. Cards are for things you can
+       press, not for everything.
+
    Rule we held: colour is reserved for STATE. Nothing else in the interface is
    coloured. Actions are black. Chrome is grey. If something is green, amber or
    red, it is telling you about a track, and you can trust that.
 --------------------------------------------------------------------------- */
 
 :root {
-  --paper: #faf9f7;
+  --paper: #f4f6f3;
   --card: #ffffff;
-  --ink: #14151a;
-  --ink-2: #43464e;
-  --ink-3: #74777f;
-  --rule: #e4e2dd;
-  --rule-strong: #cfccc5;
+  --ink: #141715;
+  --ink-2: #4a524d;
+  --ink-3: #6f7873;
+  --rule: #dde2dd;
+  --rule-strong: #b5bfb7;
 
-  /* State. The only colour in the product. */
-  --run: #0d6b57;
-  --run-bg: #e8f3ef;
-  --block: #8a5300;
-  --block-bg: #fbf1e0;
-  --breach: #a72a20;
+  /* Two washes, for the surfaces that are neither paper nor card: table heads,
+     inert chips, hover fills. Tinted from the paper rather than picked, so
+     nothing in the greyscale drifts warm. */
+  --wash: #edf1ed;
+  --wash-2: #e6ebe6;
+
+  /* State. The only colour that MEANS anything in the product. */
+  --run: #0b6e55;
+  --run-bg: #e6f2ed;
+  --block: #8a5a08;
+  --block-bg: #fbf2e2;
+  --breach: #ab2e26;
   --breach-bg: #fbeae8;
-  --done: #0d6b57;
-  --done-bg: #e8f3ef;
-  --idle: #6b6e76;
-  --idle-bg: #f0efec;
+  --done: #0b6e55;
+  --done-bg: #e6f2ed;
+  --idle: #6f7873;
+  --idle-bg: #eaeeea;
+
+  /* Not a state. The accent exists for one job — a link that leaves the page,
+     and the dot that marks the transparency route — so it must sit clear of
+     green, amber and red. Teal does, and nothing else in the product uses it. */
+  --accent: #0f7d8c;
 
   --focus: #1c53d6;
 
-  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+  /* One family, three jobs. Archivo has a workable 400-700 and a tight,
+     slightly condensed cut that takes negative tracking at display sizes
+     without falling apart — which is what lets a single face carry both a 78px
+     headline and a 13px caption. */
+  --font-display: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  --font-body: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Noto Sans Kannada', sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
+    monospace;
 
-  /* Type scale, 1.25. Set once, used everywhere. */
-  --t-xs: 0.75rem;
-  --t-sm: 0.8125rem;
-  --t-base: 0.9375rem;
-  --t-md: 1.0625rem;
-  --t-lg: 1.3125rem;
-  --t-xl: 1.6875rem;
-  --t-2xl: 2.125rem;
+  /* Type scale, 1.25 — but fluid.
+     Every size interpolates continuously between a 360px phone and a 1440px
+     desktop, so there is no width at which the page looks stranded: no
+     breakpoint where 15px type is suddenly sitting in a 900px column, and no
+     jump where a heading snaps two sizes larger mid-drag. The ratio between
+     the steps is preserved at both ends, so the scale is still a scale. */
+  --t-xs: clamp(0.75rem, 0.733rem + 0.074vw, 0.8rem);
+  --t-sm: clamp(0.8125rem, 0.792rem + 0.093vw, 0.875rem);
+  --t-base: clamp(0.9375rem, 0.896rem + 0.185vw, 1.0625rem);
+  --t-md: clamp(1.0625rem, 1.021rem + 0.185vw, 1.1875rem);
+  --t-lg: clamp(1.3125rem, 1.188rem + 0.556vw, 1.6875rem);
+  --t-xl: clamp(1.6875rem, 1.417rem + 1.204vw, 2.5rem);
+  --t-2xl: clamp(2.125rem, 1.667rem + 2.037vw, 3.5rem);
 
+  /* Small steps stay fixed — they are component-internal padding and gaps, and
+     a button that grows its own padding with the viewport just looks unwell.
+     The large steps, which separate whole sections, breathe with the page. */
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
   --sp-4: 16px;
-  --sp-5: 24px;
-  --sp-6: 32px;
-  --sp-7: 48px;
+  --sp-5: clamp(1.5rem, 1.333rem + 0.74vw, 2rem);
+  --sp-6: clamp(2rem, 1.75rem + 1.11vw, 2.75rem);
+  --sp-7: clamp(3rem, 2.5rem + 2.22vw, 4.5rem);
 
-  --radius: 6px;
+  /* Layout. The shell was capped at 560px on every screen, which meant a
+     1440px monitor showed a phone column with 900px of empty paper either
+     side. It is now fluid, and each surface opts into the width it can
+     actually justify: prose to a readable measure, app screens to a
+     two-column shell, the ward map to as much room as it can get. */
+  --gutter: clamp(1rem, 0.6rem + 1.8vw, 2.5rem);
+  /* 1440, not 1160. The canvas holds section headings, a row of four keys and
+     a three-column track row on one line at desktop width, and that only works
+     if the shell is allowed to be as wide as the monitor usually is. Prose is
+     still capped at --col-max, so nothing gets a 1400px measure. */
+  --shell-max: 1440px;
+  --col-max: 620px;
+  --col-wide-max: 900px;
+
+  /* Nearly square. 6px rounded every box into a component; at 3px a card is a
+     piece of paper with a printed edge, which is the register the rest of the
+     system is in. */
+  --radius: 3px;
+
+  /* The sticky header's height, as a token, because two other sticky things
+     and every in-page anchor have to clear it. */
+  --topbar-h: 60px;
+
+  /* Motion. One easing curve and three durations, so everything that moves in
+     this product moves the same way. */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-1: 0.14s;
+  --dur-2: 0.24s;
+  --dur-3: 0.42s;
 }
 
 * { box-sizing: border-box; }
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Anchors land below the sticky header rather than under it. */
+  scroll-padding-top: calc(var(--topbar-h) + var(--sp-4));
+  scroll-behavior: smooth;
+  /* .bleed uses 100vw, which counts the scrollbar and so overhangs the
+     document by its width. Clip that, rather than letting the page scroll
+     sideways. `clip` and not `hidden`: hidden would make this a scroll
+     container and quietly kill position: sticky on the property rail. */
+  overflow-x: clip;
 }
 
 body {
@@ -76,7 +154,10 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--t-base);
-  line-height: 1.55;
+  /* 1.55 was set when the measure was locked to 560px. At a fluid measure the
+     eye has further to travel back to the start of the next line, and 1.55
+     starts to feel like a wall of text. */
+  line-height: 1.62;
   font-feature-settings: 'tnum' 0;
   -webkit-font-smoothing: antialiased;
 }
@@ -84,9 +165,10 @@ body {
 /* Kannada needs its own line height or it clips. */
 :lang(kn), .kn { font-family: 'Noto Sans Kannada', var(--font-body); line-height: 1.75; }
 
-h1, h2, h3, h4 { margin: 0; font-weight: 600; line-height: 1.2; letter-spacing: -0.011em; }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; line-height: 1.2; letter-spacing: -0.024em; }
 p { margin: 0; }
 a { color: inherit; }
+::selection { background: #d8ece8; }
 
 button, input, select, textarea { font: inherit; color: inherit; }
 
@@ -106,35 +188,125 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* --- layout --------------------------------------------------------------- */
 
 .shell {
-  max-width: 560px;
+  width: 100%;
+  max-width: var(--shell-max);
   margin: 0 auto;
-  padding: 0 var(--sp-4) var(--sp-7);
+  padding: 0 var(--gutter) var(--sp-7);
 }
 
+/* Prose and forms hold to a readable measure no matter how wide the shell
+   gets. Line length is not a thing that should scale with the monitor. */
+.col { max-width: var(--col-max); margin-inline: auto; width: 100%; }
+.col-wide { max-width: var(--col-wide-max); margin-inline: auto; width: 100%; }
+/* Flush left instead of centred, for anything that has to line up with a
+   full-bleed band's text rather than with the middle of the page. */
+.col-flush { margin-inline: 0 auto; }
+
+/* The header sits outside the shell and spans the window, because the rule
+   under it is a structural line for the whole page rather than a border on a
+   column. It sticks: on the property screens you are four scrolls into a case
+   file and the way back to the rest of the product should not be a scroll up.
+   The rule is BLACK — the same weight as a section head, so the page reads as
+   one ruled sheet from the top down. */
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--ink);
+  margin-bottom: var(--sp-6);
+}
+.topbar-inner {
+  width: 100%;
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  min-height: var(--topbar-h);
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
   gap: var(--sp-3);
-  padding: var(--sp-4) 0;
-  border-bottom: 1px solid var(--rule);
-  margin-bottom: var(--sp-5);
 }
 
 .wordmark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  padding-right: var(--sp-4);
   font-family: var(--font-display);
   font-size: var(--t-md);
-  letter-spacing: 0.01em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   text-decoration: none;
 }
-.wordmark span { color: var(--ink-3); font-family: var(--font-body); font-size: var(--t-xs); letter-spacing: 0.04em; text-transform: uppercase; margin-left: var(--sp-2); }
+.wordmark span {
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Nav items are full-height hit areas rather than inline text with a gap, so
+   the header reads as a set of columns under one rule. Lower case and mono:
+   these are routes, not sentences. */
+.topbar-nav {
+  display: flex;
+  align-items: stretch;
+  margin-left: auto;
+  min-width: 0;
+  flex: 0 1 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.topbar-nav::-webkit-scrollbar { display: none; }
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 clamp(10px, 1.4vw, 18px);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--dur-1) var(--ease);
+}
+.nav-link:hover { color: var(--ink); }
+/* The one accent mark in the chrome, on the one route that exists to say what
+   in here is invented. */
+.nav-link i { display: block; width: 5px; height: 5px; background: var(--accent); flex: none; }
+
+.topbar-cta {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 20px;
+  margin: 8px 0;
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+.topbar-cta:hover { opacity: 0.86; }
+@media (max-width: 34rem) { .topbar-cta { display: none; } }
 
 .stack { display: flex; flex-direction: column; }
 .stack-2 > * + * { margin-top: var(--sp-2); }
 .stack-3 > * + * { margin-top: var(--sp-3); }
+/* Cards in a stack were butting up at 12px, which read as one long striped
+   surface rather than as separate statements. */
 .stack-4 > * + * { margin-top: var(--sp-4); }
 .stack-5 > * + * { margin-top: var(--sp-5); }
 .stack-6 > * + * { margin-top: var(--sp-6); }
+.stack-7 > * + * { margin-top: var(--sp-7); }
 
 .row { display: flex; align-items: center; gap: var(--sp-2); }
 .row-between { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
@@ -143,23 +315,32 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* --- type ----------------------------------------------------------------- */
 
-.display { font-family: var(--font-display); font-weight: 400; font-size: var(--t-xl); line-height: 1.15; letter-spacing: -0.01em; }
-.display-lg { font-family: var(--font-display); font-weight: 400; font-size: var(--t-2xl); line-height: 1.1; letter-spacing: -0.015em; }
-.h2 { font-size: var(--t-md); font-weight: 600; }
+/* One family now, so the display sizes are separated from body copy by weight
+   and by tracking rather than by a change of voice. Archivo tightens up as it
+   grows — the tracking gets more negative at every step, because optical size
+   is not a thing a webfont does for you. */
+.display { font-family: var(--font-display); font-weight: 600; font-size: var(--t-xl); line-height: 1.1; letter-spacing: -0.032em; }
+.display-lg { font-family: var(--font-display); font-weight: 600; font-size: var(--t-2xl); line-height: 1.0; letter-spacing: -0.042em; text-wrap: balance; }
+.h2 { font-size: var(--t-md); font-weight: 600; letter-spacing: -0.024em; }
 .h3 { font-size: var(--t-base); font-weight: 600; }
-.small { font-size: var(--t-sm); }
-.xs { font-size: var(--t-xs); }
+.small { font-size: var(--t-sm); line-height: 1.6; }
+.xs { font-size: var(--t-xs); line-height: 1.55; }
 .muted { color: var(--ink-3); }
 .ink2 { color: var(--ink-2); }
 .mono { font-family: var(--font-mono); font-size: 0.9em; letter-spacing: -0.01em; }
 .tnum { font-variant-numeric: tabular-nums; }
 
+/* The micro-label. Mono, uppercase, widely tracked — it is the caption on a
+   printed form, and it is deliberately the one thing in the interface that
+   never looks like prose, so it can sit directly above a value without being
+   mistaken for one. */
 .eyebrow {
+  font-family: var(--font-mono);
   font-size: var(--t-xs);
-  letter-spacing: 0.07em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-3);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* --- the mocked-data marker ----------------------------------------------- */
@@ -188,10 +369,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border: 1px solid var(--rule);
   border-radius: var(--radius);
 }
-.card-pad { padding: var(--sp-4); }
-.card + .card { margin-top: var(--sp-3); }
+/* Card padding grows with the page. At 16px flat, a card on a 1440px screen
+   read as a box with text jammed against the edges. */
+.card-pad { padding: clamp(1.125rem, 0.95rem + 0.7vw, 1.75rem); }
+.card + .card { margin-top: var(--sp-4); }
 
 .divider { height: 1px; background: var(--rule); border: 0; margin: 0; }
+
+/* Links inside running text keep the ink colour and are marked by the rule
+   under them; the accent is reserved for the ones that leave the page. */
+p a, li a { text-decoration-color: var(--rule-strong); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+p a:hover, li a:hover { color: var(--accent); text-decoration-color: currentColor; }
 
 /* --- controls ------------------------------------------------------------- */
 
@@ -221,7 +409,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   color: var(--ink);
   border-color: var(--rule-strong);
 }
-.btn-ghost:hover { background: #f2f1ee; opacity: 1; }
+.btn-ghost:hover { background: var(--wash); opacity: 1; }
 
 .btn-sm { min-height: 36px; padding: 0 var(--sp-3); font-size: var(--t-sm); }
 
@@ -241,22 +429,28 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-size: var(--t-md);
 }
 .textarea { min-height: 110px; resize: vertical; font-size: var(--t-base); line-height: 1.5; }
-.input::placeholder, .textarea::placeholder { color: #a5a7ad; }
+.input::placeholder, .textarea::placeholder { color: #9aa39c; }
 
 /* --- state pills ---------------------------------------------------------- */
 
+/* Square, not a lozenge. A rounded pill is a UI chip; this is a stamp on a
+   document, and it holds the same mono register as the identifiers it sits
+   beside. The square dot is the same mark used in the header nav for the
+   transparency route — one shape, meaning "state, here". */
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   padding: 3px 9px 3px 7px;
-  border-radius: 100px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
   font-size: var(--t-xs);
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
-.pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.pill::before { content: ''; width: 5px; height: 5px; background: currentColor; flex: none; }
 .pill-run { color: var(--run); background: var(--run-bg); }
 .pill-block { color: var(--block); background: var(--block-bg); }
 .pill-breach { color: var(--breach); background: var(--breach-bg); }
@@ -270,7 +464,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border: 1px solid var(--rule);
   border-left: 3px solid var(--rule-strong);
   border-radius: var(--radius);
-  padding: var(--sp-4);
+  padding: clamp(1.125rem, 0.95rem + 0.7vw, 1.75rem);
 }
 .track-run { border-left-color: var(--run); }
 .track-block { border-left-color: var(--block); }
@@ -285,9 +479,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .clock-num {
   font-family: var(--font-display);
+  font-weight: 500;
   font-size: var(--t-2xl);
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.045em;
 }
 .clock-unit { font-size: var(--t-sm); color: var(--ink-3); }
 
@@ -314,7 +509,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .next {
   border-radius: var(--radius);
-  padding: var(--sp-3);
+  padding: var(--sp-4);
   background: var(--block-bg);
   border: 1px solid #eddcbd;
 }
@@ -348,20 +543,29 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .notice {
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  background: #f3f2ef;
-  padding: var(--sp-3);
+  background: var(--wash);
+  padding: var(--sp-4);
   font-size: var(--t-sm);
   color: var(--ink-2);
 }
 
+/* The footer closes the page on the same black rule the header opened it on,
+   and it is the one place the disclaimer lives in full. */
 .footer {
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--ink);
   margin-top: var(--sp-7);
-  padding-top: var(--sp-4);
-  font-size: var(--t-xs);
+  padding-top: var(--sp-5);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4) clamp(1.125rem, 4vw, 3rem);
+  justify-content: space-between;
+  font-size: var(--t-sm);
+  line-height: 1.6;
   color: var(--ink-3);
 }
-.footer a { color: var(--ink-2); }
+.footer p { max-width: 58ch; }
+.footer strong { color: var(--ink-2); font-weight: 600; }
+.footer a { color: var(--accent); }
 
 .skip {
   position: absolute;
@@ -374,11 +578,16 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: var(--sp-2) var(--sp-3); border-radius: var(--radius);
 }
 
-/* Desktop is the afterthought, as promised. It just gets more room. */
-@media (min-width: 720px) {
-  .shell { max-width: 640px; padding-top: var(--sp-2); }
-  .display-lg { font-size: 2.5rem; }
-}
+/* The old desktop breakpoint lived here. It is gone on purpose: the type scale
+   and the gutters are fluid now, so there is nothing left to snap. The shell's
+   top padding went with the header when the header left the shell. */
+
+/* The landing opens flush against the header's rule — the dark band is the
+   next thing after it, with no paper in between. */
+.flush-top { margin-top: calc(-1 * var(--sp-6)); }
+
+/* …and the argument below the band starts on paper with room around it. */
+.landing-body { padding-top: var(--sp-7); }
 
 /* ---------------------------------------------------------------------------
    Pass 2 — refinements
@@ -414,7 +623,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .keys-head {
   padding: var(--sp-3) var(--sp-4);
   border-bottom: 1px solid var(--rule);
-  background: #f3f2ef;
+  background: var(--wash);
 }
 .key-row {
   display: flex;
@@ -434,7 +643,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-family: var(--font-mono);
   font-size: var(--t-sm);
   letter-spacing: -0.02em;
-  background: #f0efec;
+  background: var(--wash-2);
   border: 1px solid var(--rule);
   border-radius: 4px;
   padding: 3px 7px;
@@ -443,7 +652,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .keys-foot {
   padding: var(--sp-3) var(--sp-4);
   border-top: 1px solid var(--rule);
-  background: #f3f2ef;
+  background: var(--wash);
   font-size: var(--t-xs);
   color: var(--ink-2);
 }
@@ -454,9 +663,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .headline {
   font-family: var(--font-display);
+  font-weight: 500;
   font-size: var(--t-2xl);
   line-height: 1.05;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.045em;
 }
 .headline-warn { color: var(--block); }
 
@@ -477,7 +687,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-size: var(--t-xs);
   color: var(--ink-3);
 }
-.binding-meta > span { white-space: nowrap; }
+/* Was nowrap, which was safe while every binding card was the full width of a
+   560px column. In a two-up grid the longest label plus a mock account number
+   is wider than the card, and nowrap has no way to give. The dot separators
+   below already keep the fields distinguishable when they wrap. */
+.binding-meta > span { white-space: normal; overflow-wrap: anywhere; }
 /* Without a separator these ran together into one unreadable string:
    "SAS Application Number 2024-25-MOCK-31905 updated 6 days ago nothing owing" */
 .binding-meta > span + span::before {
@@ -487,9 +701,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .binding-owed {
   font-family: var(--font-display);
+  font-weight: 500;
   font-size: var(--t-lg);
   line-height: 1;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.035em;
   color: var(--block);
 }
 
@@ -500,12 +715,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .display .mock,
 .display-lg .mock,
 .headline .mock,
+.figure b .mock,
 .binding-owed .mock {
   border-bottom: 0;
 }
 .display .mock::after,
 .display-lg .mock::after,
 .headline .mock::after,
+.figure b .mock::after,
 .binding-owed .mock::after {
   width: 4px;
   height: 4px;
@@ -521,8 +738,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   cursor: pointer;
   transition: border-color 0.12s ease, background 0.12s ease;
 }
-.card-press:hover { border-color: var(--rule-strong); background: #fdfdfc; }
-.card-press:active { background: #f5f4f1; }
+.card-press:hover { border-color: var(--rule-strong); background: #fafcfa; }
+.card-press:active { background: var(--wash-2); }
 
 /* --- details disclosures --------------------------------------------------- */
 
@@ -553,14 +770,43 @@ input[type='checkbox'] {
 
 /* --- section headings ------------------------------------------------------ */
 
+/* A section opens on a BLACK rule and its rows are divided by grey ones. That
+   one distinction does most of the structural work in the product now: you can
+   tell where a section starts without a heading having to shout, and rows can
+   lose their card borders entirely. */
 .section-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--sp-3);
-  padding-bottom: var(--sp-2);
-  border-bottom: 1px solid var(--rule);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--ink);
 }
+
+/* A hairline row: the default way to list things now. No box, no radius, no
+   hover fill — just a rule under each one, the way a statement lists lines. */
+.hrow { padding: var(--sp-4) 0; border-bottom: 1px solid var(--rule); }
+
+/* The figure a row exists to report, in the row's own state colour. Tabular,
+   because these sit in a column and a column of figures that shifts is a
+   column you cannot scan. */
+.figure {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-variant-numeric: tabular-nums;
+}
+/* The figure and its mocked-data marker are one token. Without this the dot
+   breaks to its own line under the number the moment the column is tight. */
+.figure > b {
+  white-space: nowrap;
+  font-weight: 500;
+  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+.figure > span { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--ink-3); }
 
 /* ---------------------------------------------------------------------------
    Department view
@@ -577,9 +823,9 @@ input[type='checkbox'] {
   --net-water: #235fa8;
   --net-sewer: #6d4a9c;
   --net-power: #9a7b10;
-  --map-road: #ddd9d1;
-  --map-lake: #dfe8ee;
-  --map-ground: #fbfaf8;
+  --map-road: #dfe3dd;
+  --map-lake: #e2eaee;
+  --map-ground: #fafcfa;
 }
 
 .map-wrap {
@@ -629,7 +875,7 @@ input[type='checkbox'] {
   border-left: 3px solid var(--breach);
   background: var(--breach-bg);
   border-radius: var(--radius);
-  padding: var(--sp-4);
+  padding: clamp(1.125rem, 0.95rem + 0.7vw, 1.75rem);
 }
 
 .stat-row {
@@ -650,9 +896,10 @@ input[type='checkbox'] {
 }
 .stat-num {
   font-family: var(--font-display);
+  font-weight: 500;
   font-size: var(--t-xl);
   line-height: 1.05;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
 }
 
 /* Works list */
@@ -683,3 +930,582 @@ input[type='checkbox'] {
 }
 .seg button + button { border-left: 1px solid var(--rule); }
 .seg button[aria-pressed='true'] { background: var(--ink); color: #fff; font-weight: 500; }
+
+/* ---------------------------------------------------------------------------
+   Collection log — the recurring-service instrument
+
+   Everywhere else, a track's state is carried by a countdown. Garbage has no
+   countdown, so state has to be carried by the shape of a history instead: one
+   column per calendar day, every stream drawn against the same columns, and a
+   blank where nothing was scheduled. Read across for a stream, down for a day.
+
+   THE COLOUR DECISION, because it inverts what a status grid normally does.
+   A contribution graph shouts its successes — the bright square is the day you
+   did the thing. Here the successes are the baseline: the tipper is supposed
+   to come, and a wall of saturated green for "the service worked" would put
+   the ordinary in direct competition with the exception. So collected is a
+   pale tint of the same green the "All collected" pill uses, and missed is
+   breach red at full strength. The only thing that pops is the only thing that
+   needs acting on, and the difference between them is luminance as well as
+   hue, which survives colour-blindness. Colour is never the sole carrier
+   either — every row states its count in words beside the pill.
+--------------------------------------------------------------------------- */
+
+.cal { display: flex; gap: 7px; }
+/* Seven days per group. Same boundaries on every stream, so a column still
+   reads vertically across all three rows. */
+.cal-week {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.cal-cell,
+.cal-key {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  background: #e6ebe6;
+  min-height: 9px;
+}
+/* Not scheduled. Faint, but NOT invisible: dropping it out entirely left three
+   red squares floating in white space, which reads as missing data rather than
+   as a weekly round, and takes the lattice with it. A day nothing was due is
+   still a day. */
+.cal-off { background: #f0f3f0; }
+/* The quiet tint has to be a COLOUR, not an opacity.
+   It was `opacity: .28` until the entrance animation went in, and an
+   animation's final keyframe sets opacity: 1 with higher cascade priority than
+   any normal declaration — so every collected cell silently went full-strength
+   green the moment it finished animating, and the whole point of the palette
+   (the norm is quiet, the exception is loud) was lost. Mixing the colour up
+   front cannot be overridden by a keyframe. */
+.cal-collected {
+  background: #aec6bd;
+  background: color-mix(in srgb, var(--done) 28%, #e6ebe6);
+}
+.cal-missed { background: var(--breach); }
+/* Today, before anyone knows. Outlined rather than filled: the interface does
+   not get to guess. */
+.cal-due { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+/* The citizen's own mark, kept visually distinct from the department's record
+   rather than laundered into it. Hatched, not merely a second red. */
+.cal-mine {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--breach) 0 2px,
+    #dd9a94 2px 4px
+  );
+}
+
+.cal-scale { display: flex; gap: 7px; }
+.cal-scale > span {
+  flex: 1;
+  text-align: center;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A novel encoding needs a key, and it needs it on the same screen — tooltips
+   do not exist on a phone. */
+.cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px var(--sp-4);
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+.cal-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+/* Base is declared up with .cal-cell so the state modifiers below it still
+   win — a legend whose swatches are the wrong colour is worse than no legend. */
+.cal-key { width: 11px; height: 11px; flex: none; }
+
+.headline-breach { color: var(--breach); }
+
+/* The assertion row. The control is an action ("Didn't come"), the department's
+   record is a state (a pill) — and they must never look alike, or a citizen
+   cannot tell what they are being shown from what they are being offered. */
+.assert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+}
+.assert + .assert { border-top: 1px solid var(--rule); }
+.assert-mine {
+  border-left: 2px solid var(--breach);
+  padding-left: var(--sp-3);
+  margin-left: -1px;
+}
+
+/* ---------------------------------------------------------------------------
+   Pass 3 — the app shell, and motion
+
+   The property screens are the only place in this product where a person
+   works rather than reads: they arrive with a question about one flat and move
+   between four views of it. On a phone that is a stack with tabs, which is
+   what it always was. On anything wider it should be what it actually is — a
+   context rail that never moves and a pane that changes.
+
+   The rail holds the things that stay true whichever view you are in: the
+   address, the four keys, what is owed, whose desk it is on. That is not
+   decoration. It is the answer to "which flat am I looking at", which on the
+   old single-column layout you lost the moment you scrolled past the header.
+--------------------------------------------------------------------------- */
+
+.split {
+  display: grid;
+  gap: var(--sp-5);
+  align-items: start;
+}
+/* Grid items default to min-width: auto, which means they refuse to shrink
+   below their content's min-content width. The rail's nav is four tabs wide —
+   488px — so on a 390px phone the rail forced the whole page 115px wider than
+   the screen and the body scrolled sideways. The nav already scrolls itself;
+   this lets it. Applies to the pane too, where a wide table or code block
+   would do exactly the same thing. */
+.split > * { min-width: 0; }
+.rail-nav { min-width: 0; }
+
+@media (min-width: 62rem) {
+  .split {
+    grid-template-columns: minmax(15rem, 17.5rem) minmax(0, 1fr);
+    gap: clamp(2rem, 3.4vw, 3.5rem);
+  }
+  .rail {
+    position: sticky;
+    /* Clears the topbar, and leaves the rail room to scroll internally on a
+       short window rather than clipping its own tail. The topbar is sticky
+       too now, so the rail has to start below it — parked at 16px it slid
+       under the blur. */
+    top: calc(var(--topbar-h) + var(--sp-4));
+    max-height: calc(100dvh - var(--topbar-h) - var(--sp-6));
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+}
+
+/* Below the split, the rail is a header sitting on top of the page, and every
+   line it carries pushes the actual content further down a 667px screen. The
+   orientation a phone needs is the address and the nav; the ePID and the
+   standing privacy note are reference, and reference is what a desktop rail
+   has room for and a phone header does not. */
+@media (max-width: 61.99rem) {
+  .wide-only { display: none; }
+  .rail-head { padding-bottom: var(--sp-2); }
+  .rail-owed {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--sp-2) !important;
+    padding-top: var(--sp-2);
+  }
+}
+
+/* The rail's identity block. Deliberately quiet — it is orientation, not the
+   headline. The headline is in the pane. */
+.rail-head { padding-bottom: var(--sp-3); border-bottom: 1px solid var(--rule); }
+.rail-addr {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-md);
+  line-height: 1.25;
+  letter-spacing: -0.026em;
+}
+
+/* Navigation. Horizontal scroller on a phone, vertical list on a desktop —
+   one component, because they are the same list and should never drift. */
+.rail-nav { display: flex; gap: 0; overflow-x: auto; border-bottom: 1px solid var(--rule); }
+.rail-link {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 10px 14px 10px 0;
+  margin-right: 18px;
+  white-space: nowrap;
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color var(--dur-1) var(--ease);
+}
+.rail-link:hover { color: var(--ink-2); }
+.rail-link[aria-current='page'] {
+  color: var(--ink);
+  font-weight: 600;
+  border-bottom-color: var(--ink);
+}
+/* A count or an amount riding on the nav item it belongs to. State lives next
+   to the thing it is a state of. */
+.rail-badge {
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+  background: var(--wash-2);
+  border-radius: 100px;
+  padding: 1px 6px;
+}
+.rail-badge-warn { color: var(--block); background: var(--block-bg); }
+.rail-badge-breach { color: var(--breach); background: var(--breach-bg); }
+
+@media (min-width: 62rem) {
+  .rail-nav {
+    flex-direction: column;
+    overflow: visible;
+    border-bottom: 0;
+    gap: 1px;
+  }
+  .rail-link {
+    justify-content: space-between;
+    padding: 9px var(--sp-3);
+    margin: 0;
+    border-bottom: 0;
+    border-left: 2px solid transparent;
+    border-radius: 0 4px 4px 0;
+  }
+  .rail-link:hover { background: var(--wash); }
+  .rail-link[aria-current='page'] {
+    border-bottom-color: transparent;
+    border-left-color: var(--ink);
+    background: var(--wash);
+  }
+}
+
+/* --- motion --------------------------------------------------------------- */
+/* Everything below is suppressed wholesale by the prefers-reduced-motion block
+   near the top of this file. None of it carries information on its own. */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes cell-in {
+  from { opacity: 0; transform: scale(0.72); }
+  to { opacity: 1; transform: none; }
+}
+
+/* The pane, on every route change. Next prefetches the tab you are about to
+   press, so navigation is already instant; what was missing was any signal
+   that the content had changed at all. */
+.pane-in { animation: rise var(--dur-3) var(--ease) both; }
+
+/* Staggered by index via --i, set inline. Cheap, and it makes the shape of the
+   log legible as it lands rather than all at once. */
+.cal-cell { animation: cell-in var(--dur-2) var(--ease) both; animation-delay: calc(var(--i, 0) * 9ms); }
+
+.card, .track, .finding { transition: border-color var(--dur-1) var(--ease); }
+
+/* Numbers that change should look like they changed. */
+.tick { transition: color var(--dur-2) var(--ease); }
+
+/* --- landing -------------------------------------------------------------- */
+
+/* Full-bleed: escape the shell's max-width and gutters entirely.
+   50% is half the container, 50vw is half the viewport, so the difference is
+   exactly the distance from the container's left edge to the window's. */
+.bleed {
+  width: 100vw;
+  /* margin-block too: a <figure> or <section> carrying a default block margin
+     will otherwise need an inline style to clear it, and an inline style
+     silently beats the negative margin-left below. */
+  margin-block: 0;
+  margin-left: calc(50% - 50vw);
+}
+
+/* Re-establish the shell's measure inside a full-bleed band, so hero text
+   still lines up with every other page's left edge. */
+.bleed-inner {
+  /* width: 100% matters. Without it this is a flex item sized to its content,
+     and `margin-inline: auto` then centres that narrow box instead of centring
+     a full-width one — which pushed the headline into the middle of the screen
+     and out of line with every other page's left edge. */
+  width: 100%;
+  max-width: var(--shell-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* THE HERO.
+   The one screen in this product whose job is comprehension rather than
+   action, so it gets a photograph, a lot of room, and nothing to click.
+
+   Inverted from the rest of the product on purpose: the band is dark, the
+   headline is white, and it runs the full width of the window. Everything
+   after it is paper. That contrast is the whole reason the hero can carry a
+   photograph at all without the interface going soft — the picture is sealed
+   inside one dark band and never touches the working screens.
+
+   The picture is halftoned and cropped to a 16:9 frame. Dot texture reads as
+   print rather than as stock photography, and it is desaturated the rest of
+   the way so it cannot compete with the state colours, which are the only
+   colours in this product allowed to mean anything. The crop keeps the dome
+   and the portico floor and drops dead sky above and the railing below, so
+   the frame ends where the building meets the ground instead of amputating
+   the columns the way the old 4:3 slice did. */
+.hero-shell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  /* One source for the band's height: the fixed media layer below has to be
+     exactly this tall, so it reads the token instead of repeating the
+     clamp. */
+  --hero-h: clamp(30rem, 84vh, 54rem);
+  height: var(--hero-h);
+  background: #2a312c;
+}
+
+/* The picture is a real <img> pinned to the VIEWPORT, not to the band. While
+   the page scrolls, the building holds still and the sections after the hero
+   slide up over it — the photograph stays, the paperwork moves. That one
+   frozen layer under one moving sheet is both the parallax and the depth.
+
+   Why fixed and not the alternatives: `background-attachment: fixed` is the
+   same idea but iOS Safari sizes the image against the document rather than
+   the viewport and the effect falls apart; a scroll-driven animation (the
+   previous approach) only ran in Chromium and moved the image the wrong way
+   for this. `position: fixed` works everywhere and costs nothing per frame —
+   the layer never moves, so there is nothing to animate. No JavaScript, no
+   work per scroll frame on the main thread.
+
+   Two load-bearing rules keep the illusion sealed:
+   1. The media must stay viewport-fixed, so no ancestor of .hero-shell may
+      carry a transform, filter or clip-path — any of them would re-contain
+      the fixed layer to the page. This is why the landing root does not have
+      .pane-in, and why the entrance animations live on the sections instead.
+   2. Everything after the band must be an opaque, positioned sheet with no
+      transparent gaps, or the frozen photograph shows through it. That
+      contract is the "covering sheet" block after the scrim below. */
+.hero-media {
+  position: fixed;
+  left: 0;
+  right: 0;
+  /* The band starts flush under the topbar. Anchoring at the topbar's height
+     (not at 0) keeps the photograph out of the topbar's blurred strip, which
+     belongs to whatever is scrolling underneath it. */
+  top: var(--topbar-h);
+  height: var(--hero-h);
+  z-index: -2;
+  animation: fade var(--dur-2) var(--ease) both;
+}
+.hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The building is on the right of the frame and the sky is on the left,
+     which is where the headline goes. Vertically about a fifth down: anchoring
+     the crop to the bottom threw away the dome and kept the railings. */
+  object-position: 72% 20%;
+  filter: saturate(0.5) contrast(1.02) brightness(0.94);
+}
+
+/* Reduced motion: unpin the picture so it scrolls away with the band like
+   any other image. The effect is positional rather than animated, so the
+   blanket duration override cannot reach it — it needs its own off switch. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-media { position: absolute; top: 0; }
+}
+
+/* The scrim. Heavy at the foot where the words are, barely there across the
+   middle so the building survives, and a touch at the very top so the sticky
+   header's black rule has something to sit against. */
+.hero-shell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    rgba(10, 14, 12, 0.86) 0%,
+    rgba(10, 14, 12, 0.52) 24%,
+    rgba(10, 14, 12, 0.06) 52%,
+    rgba(10, 14, 12, 0.22) 100%
+  );
+}
+
+/* The covering sheet. The hero photograph is pinned to the viewport, so every
+   section after the band has to paint over it: full-bleed (a shell-width
+   sheet leaves the picture showing through the gutters), positioned (a later
+   positioned sibling lands above the band's stacking context), opaque, and
+   with no transparent gaps between one another. Margins do not paint, so the
+   gap above the footer's rule moves into the body's padding. The faint shadow
+   above the find-band is what sells the sheet sliding over the photograph
+   rather than replacing it. */
+.find-band {
+  position: relative;
+  box-shadow: 0 -22px 44px -22px rgba(10, 14, 12, 0.45);
+}
+.landing-body {
+  position: relative;
+  background: var(--paper);
+  padding-bottom: var(--sp-7);
+}
+.footer-sheet {
+  position: relative;
+  background: var(--paper);
+}
+.flush-top .footer { margin-top: 0; }
+
+.hero {
+  width: 100%;
+  padding: 0 0 clamp(1.75rem, 4vw, 3.25rem);
+  color: #fff;
+  animation: rise var(--dur-3) var(--ease) both;
+}
+/* The headline is bigger here than --t-2xl goes anywhere else in the product.
+   It is the only line on the page and it is sitting on a photograph; at 56px
+   it read as a heading on a screen rather than as a statement. */
+/* The measure belongs on the HEADLINE, not on the block around it: `ch` is
+   relative to the element's own font size, so 24ch on a 17px wrapper is a
+   240px column and the 78px headline inside it breaks after every second
+   word. */
+.hero .display-lg {
+  color: #fff;
+  font-size: clamp(2.125rem, 5.6vw, 4.875rem);
+  max-width: 24ch;
+}
+/* On the dark band the micro-label cannot be --ink-3; it needs to be white
+   held back, not grey pushed forward. */
+.hero .eyebrow { color: rgba(255, 255, 255, 0.72); }
+
+@media (max-width: 40rem) {
+  .hero-shell { --hero-h: clamp(26rem, 76vh, 34rem); }
+  /* Narrow and tall: cover is height-driven here, so the crop's full height
+     survives and the horizontal window is what moves. Keep it on the dome. */
+  .hero-media img { object-position: 70% 20%; }
+}
+
+.hero-cap {
+  display: block;
+  max-width: 60ch;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  line-height: 1.55;
+  color: var(--ink-3);
+}
+
+/* --- landing lede --------------------------------------------------------- */
+
+.lede {
+  font-size: var(--t-md);
+  line-height: 1.5;
+  color: var(--ink-2);
+  max-width: 42ch;
+}
+
+/* The four keys, as the landing's proof rather than a paragraph claiming it.
+   Boxes were wrong here: four bordered cards read as four things that go
+   together, which is the opposite of the point. Four columns under one rule
+   read as four separate registers that happen to be about the same flat, and
+   you can see they do not match without being told. */
+.keys-mini {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: 0;
+}
+.key-mini {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+  padding: var(--sp-5) clamp(0.875rem, 2vw, 1.75rem) var(--sp-5) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.key-mini > span:nth-child(1) {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.key-mini > span:nth-child(2) {
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
+}
+.key-mini > span:nth-child(3) { font-size: var(--t-sm); color: var(--ink-2); }
+
+/* --- the find band -------------------------------------------------------- */
+/* The one action on this page, given its own white band across the window so
+   it cannot be missed and cannot be mistaken for part of the argument above
+   it. Card on paper would have made it a third thing to read. */
+.find-band { background: var(--card); border-bottom: 1px solid var(--rule); }
+.find-band > .bleed-inner {
+  padding-block: clamp(1.375rem, 3vw, 2.25rem);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: clamp(1.125rem, 3vw, 3rem);
+  align-items: end;
+}
+.find-form { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: flex-end; }
+.find-form .field { flex: 1 1 260px; min-width: 0; }
+.find-form .btn { flex: none; min-height: 50px; padding: 0 24px; }
+.find-form .input { min-height: 50px; font-size: var(--t-md); border-color: var(--ink); }
+/* Step two is a single conversation, not two columns of one. */
+.find-band-solo > .bleed-inner { grid-template-columns: minmax(0, 34rem); }
+
+/* --- landing rows --------------------------------------------------------- */
+/* A track, stated as a row rather than as a card: what it is and its state,
+   the figure that says how it is going, and one line of prose. Three columns
+   on a desktop, stacked below that, always on a hairline. */
+.track-row {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 16rem) minmax(0, 1fr);
+  gap: var(--sp-3) clamp(0.875rem, 3vw, 2.75rem);
+  align-items: baseline;
+  padding: clamp(1rem, 2vw, 1.5rem) 0;
+  border-bottom: 1px solid var(--rule);
+}
+@media (max-width: 52rem) {
+  .track-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* A seeded property, offered as a row you can press. It is a button, so it
+   gets a hover — but a background wash, not a border and a radius: the rule
+   above and below it is doing the containing. */
+.demo-row {
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  padding: clamp(1rem, 2vw, 1.375rem) var(--sp-3);
+  margin-inline: calc(-1 * var(--sp-3));
+  width: calc(100% + var(--sp-3) * 2);
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) auto;
+  gap: var(--sp-2) clamp(0.875rem, 3vw, 2.75rem);
+  align-items: baseline;
+  transition: background var(--dur-1) var(--ease);
+}
+.demo-row:hover { background: var(--wash); }
+.demo-row:active { background: var(--wash-2); }
+@media (max-width: 52rem) {
+  .demo-row { grid-template-columns: minmax(0, 1fr); }
+  .demo-row > :last-child { text-align: left !important; }
+}
+
+/* --- wide-screen density -------------------------------------------------- */
+/* Cards that hold independent items pair up once there is room for two full
+   measures. Below that they stay stacked, because two 240px columns of prose
+   is worse than one 480px column. */
+.pair {
+  display: grid;
+  gap: var(--sp-4);
+}
+/* `.card + .card` adds a top margin for stacked cards, and it keeps matching
+   inside a grid — where the gap already does that job — so every card after
+   the first sat a few pixels lower than its neighbour. */
+.pair > .card + .card,
+.pair > .track + .track { margin-top: 0; }
+@media (min-width: 48rem) {
+  .pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pair > .pair-span { grid-column: 1 / -1; }
+}

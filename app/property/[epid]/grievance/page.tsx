@@ -1,9 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getProperty, SEEDED_GRIEVANCES } from '@/lib/fixtures'
 import { modelConfigured } from '@/lib/ai'
-import { PropertyTabs } from '@/components/PropertyTabs'
 import { GrievanceTab } from '@/components/GrievanceTab'
-import { Footer } from '@/components/ui'
 
 export default async function GrievancePage({
   params,
@@ -18,13 +16,11 @@ export default async function GrievancePage({
 
   return (
     <div className="stack stack-5">
-      <PropertyTabs epid={property.ePID} />
       <GrievanceTab
         property={property}
         seeded={seeded}
         modelLive={modelConfigured()}
       />
-      <Footer />
     </div>
   )
 }

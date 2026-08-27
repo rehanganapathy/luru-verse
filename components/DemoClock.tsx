@@ -22,7 +22,7 @@ export function DemoClock({
   const now = nowWithOffset(ledger)
 
   return (
-    <section className="card card-pad stack stack-3" style={{ background: '#f3f2ef' }}>
+    <section className="card card-pad stack stack-3" style={{ background: 'var(--wash)' }}>
       <div className="stack stack-2">
         <div className="eyebrow">Reviewer control — move the clock</div>
         <p className="xs muted">

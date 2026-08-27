@@ -21,6 +21,7 @@ import type {
   ServiceId,
   TransferTicket,
 } from './types'
+import type { CitizenReport } from './swm'
 
 export const LEDGER_KEY = 'handover.ledger.v1'
 
@@ -38,6 +39,15 @@ export type PropertyLedger = {
   grievances: GrievanceThread[]
   /** Blockers the citizen has cleared in-app, e.g. paid arrears. */
   clearedBlockers: string[]
+  /**
+   * Collections the citizen says did not happen.
+   *
+   * Optional, and read through collectionReports() below, because a reviewer
+   * who opened the app yesterday has a ledger without this field and bumping
+   * the version to add it would silently wipe their tickets. Adding a field is
+   * not a reason to throw away someone's state.
+   */
+  collectionReports?: CitizenReport[]
 }
 
 export type Ledger = {
@@ -54,7 +64,11 @@ export const EMPTY_LEDGER: Ledger = {
 }
 
 export function emptyPropertyLedger(): PropertyLedger {
-  return { tickets: {}, grievances: [], clearedBlockers: [] }
+  return { tickets: {}, grievances: [], clearedBlockers: [], collectionReports: [] }
+}
+
+export function collectionReports(p: PropertyLedger): CitizenReport[] {
+  return p.collectionReports ?? []
 }
 
 export function readLedger(): Ledger {

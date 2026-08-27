@@ -88,12 +88,13 @@ function Consent({
       <div className="stack stack-2">
         <div className="eyebrow">Start handover</div>
         <h1 className="display">
-          Move all three at once
+          Move all of it at once
         </h1>
         <p className="ink2">
-          One consent, three departments. Today this is three separate
+          One consent, four departments. Today this is three separate
           applications, three counters, three sets of documents, and arrears you
-          find out about one at a time.
+          find out about one at a time. The fourth needs no application at all,
+          and you would have had no way to know that either.
         </p>
       </div>
 
@@ -116,8 +117,9 @@ function Consent({
           <strong className="small">What you are agreeing to</strong>
           <ul style={{ margin: 0, paddingLeft: 18 }} className="small stack stack-1">
             <li>
-              We ask BBMP, BESCOM and BWSSB about <em>this property</em> and
-              check whether your name matches what they hold.
+              We ask BBMP&rsquo;s revenue and waste wings, BESCOM and BWSSB
+              about <em>this property</em> and check whether your name matches
+              what they hold.
             </li>
             <li>
               We never ask any of them what else you own. That question has no
@@ -160,7 +162,7 @@ function Consent({
         </label>
 
         <button className="btn btn-block" type="submit" disabled={!agreed || pending}>
-          {pending ? 'Contacting three departments…' : 'Consent and start'}
+          {pending ? 'Contacting four departments…' : 'Consent and start'}
         </button>
       </form>
     </div>
@@ -173,6 +175,7 @@ const DEPT_SHORT: Record<ServiceId, string> = {
   'bbmp-tax': 'Khata mutation',
   bescom: 'BESCOM name transfer',
   bwssb: 'BWSSB name transfer',
+  'bbmp-swm': 'Solid waste user fee',
 }
 
 function Tracks({
@@ -225,6 +228,7 @@ function Tracks({
 
   const running = tickets.filter((t) => t.status === 'in_progress').length
   const blocked = tickets.filter((t) => t.status === 'blocked').length
+  const done = tickets.filter((t) => t.status === 'complete').length
   const breached = tickets.filter(
     (t) => t.sakala && readClock(t.sakala, now).breached,
   ).length
@@ -233,12 +237,13 @@ function Tracks({
     <div className="stack stack-5">
       <div className="stack stack-2">
         <div className="eyebrow">Handover in progress</div>
-        <h1 className="display">Three tracks</h1>
+        <h1 className="display">{tickets.length} tracks</h1>
         <p className="ink2 small">
           Not a wizard. They run at the same time, at their own speeds, and one
-          being stuck does not stop the other two.{' '}
+          being stuck does not stop the others.{' '}
           <Mock what="Mock name">{mine.consent?.newHolderName}</Mock> is the
-          name going on all three.
+          name going on all of them — including the one that was already done
+          before you started.
         </p>
       </div>
 
@@ -248,11 +253,14 @@ function Tracks({
           {running > 0 && <Pill tone="run">{running} running</Pill>}
           {blocked > 0 && <Pill tone="block">{blocked} blocked</Pill>}
           {breached > 0 && <Pill tone="breach">{breached} past guarantee</Pill>}
-          {running === 0 && blocked === 0 && <Pill tone="done">All done</Pill>}
+          {done > 0 && <Pill tone="done">{done} needed nothing</Pill>}
+          {running === 0 && blocked === 0 && done === 0 && (
+            <Pill tone="done">All done</Pill>
+          )}
         </div>
       </div>
 
-      <div className="stack stack-3">
+      <div className="pair">
         {tickets.map((t) => (
           <Track
             key={t.serviceId}
@@ -351,6 +359,14 @@ function Track({
               <span className="mono">{ticket.sakala.gscNumber}</span>
             </Mock>
           </p>
+        </div>
+      )}
+
+      {/* "Nothing to do here" is a result, and it needs the same weight as a
+          countdown or the citizen will assume the track is broken. */}
+      {ticket.note && (
+        <div className="notice">
+          <p className="small">{ticket.note}</p>
         </div>
       )}
 
