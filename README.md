@@ -1,4 +1,4 @@
-# Handover
+# Luruverse
 
 One property object. Every department.
 
@@ -60,8 +60,11 @@ app holds no server-side state — see below.
 ```
 lib/types.ts             The property object and its bindings. No personId, anywhere.
 lib/adapters/types.ts    ServiceAdapter — the seam. Six methods, none of them reverse.
-lib/adapters/registry.ts BBMP, BESCOM, BWSSB. Adding a fourth is one file plus one line.
+lib/adapters/registry.ts BBMP tax, BESCOM, BWSSB, BBMP solid waste. The fourth
+                         was one config block plus one line, as promised.
 lib/adapters/vehicle.declared.ts   Declared, not built. The extensibility proof.
+lib/swm.ts               Collection schedules, the log, fee against service.
+lib/ascii.ts             GENERATED. The landing plate. See scripts/asciify.mjs.
 lib/sakala.ts            Working-day arithmetic, GSC numbers, s.5 compensation.
 lib/ledger.ts            Where state lives: the citizen's device, not our server.
 lib/ai.ts                Two model calls, and the fallback that makes them optional.
@@ -121,6 +124,47 @@ rows do not expand, there is no export, and no endpoint behind them returns
 one. "Show me who has power but has not paid tax" is a name-and-shame query,
 and the structure that answers it answers far worse questions too.
 
+### The fourth binding, and why it is the odd one out
+
+Garbage was added last and it is the most useful thing on the object, because
+it does not behave like the other three.
+
+**It is already solved, and the reason is the whole thesis.** BBMP raises the
+solid waste user fee on the property tax demand, against the same SAS number
+its revenue wing uses. There is no separate key, so there is no separate
+application: the khata mutation carries it. Nobody built an integration to
+achieve that. They used the same number. The key strip on the object screen
+shows this as a fifth row that is visibly just the second row again — four keys
+that cannot be derived from each other, and one that never needed to be.
+
+**It is recurring, so a clock is the wrong instrument.** Sakala measures one
+application against one deadline. It has nothing to say about a street where
+dry waste has not been picked up since June. `/garbage` uses a log instead:
+what was scheduled, what happened, and the number the two produce together —
+user fee charged against service delivered. A citizen notices a missed pickup.
+Nobody notices a pattern, because nobody is counting.
+
+The seeded ward makes the distinction do work. On the Chikkabanavara property
+the dry-waste round stopped arriving eleven weeks ago, because the contract
+changed and this street ended up at the edge of two routes and on neither. The
+waste kept being generated, so it went to the corner of the road — which BBMP
+has cleared twice and answered as indiscipline, since the complaint sits in one
+system and the beat roster in another. Escalating from the log appends to the
+complaint the *previous owner* opened in May rather than starting a new one, so
+nothing about how long it has been running gets reset.
+
+One honest note repeated on screen: the fee-against-service figure is not a
+refund entitlement. There is no rebate provision for non-collection the way
+s.5 gives you a real claim for a missed Sakala guarantee. It is the complaint
+expressed as arithmetic, which is why that screen has no claim button and the
+handover tracks do.
+
+**What it cannot do.** This app cannot watch a tipper. Marks you add are stored
+on your device as your observation and stay labelled as yours everywhere they
+appear, including inside anything filed from the screen. BBMP's tippers already
+carry GPS and its transfer stations already weigh loads, so verification is a
+gap we can point at rather than one we can close.
+
 ### The Sakala lever
 
 Under the Karnataka Sakala Services Act 2011, a notified service application
@@ -147,13 +191,40 @@ no statutory countdown rather than an invented one.
 - **The dotted underline + dot** on any value means it is mocked.
   `/transparency` is the complete list.
 
+### The landing background
+
+The hero sits on a halftoned photograph of the Vidhana Soudha
+(`public/vidhana-soudha.webp`, 384 KB). Halftone is the reason a photograph
+belongs in a palette this restrained: dot texture reads as print rather than as
+stock photography, and it sits *with* the paper instead of on top of it. It is
+desaturated the rest of the way in CSS so it cannot compete with the state
+colours, which are the only colours in this interface allowed to mean anything.
+
+The source is `design/vidhana-halftone-original.jpg` (5.1 MB, 4032px). To
+re-encode after replacing it:
+
+```bash
+cwebp -resize 1600 0 -q 50 -sharp_yuv design/vidhana-halftone-original.jpg \
+  -o public/vidhana-soudha.webp
+```
+
+Halftone dots are high-frequency detail and compress badly — JPEG at the same
+width and quality is roughly double. 384 KB is close to the floor at 1600px,
+and the image is scrimmed and desaturated in use, so quality below q50 buys
+nothing visible.
+
+`scripts/asciify.mjs` renders an image to an ASCII plate and is no longer used
+by the app; it and `lib/ascii.ts` can be deleted if that route is not coming
+back.
+
 ## Routes
 
 | Route | What it is |
 |---|---|
 | `/` | Find your property — two-step lookup |
 | `/property/[epid]` | The object: one card, three bindings |
-| `/property/[epid]/handover` | Consent, then three parallel tracks with live Sakala clocks |
+| `/property/[epid]/handover` | Consent, then four parallel tracks with live Sakala clocks |
+| `/property/[epid]/garbage` | Collection log, missed rounds, fee against service |
 | `/property/[epid]/handover/claim` | Pre-filled s.5 compensation appeal |
 | `/property/[epid]/grievance` | Append-only threads keyed on the property |
 | `/dept` | Department view: ward map, works, assessment gaps |

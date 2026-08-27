@@ -143,10 +143,18 @@ Departments:
 - bbmp-tax: BBMP property tax, khata records, assessment, ownership records, mutation.
 - bescom: electricity supply, meters, billing, transformers, streetlights, power cuts.
 - bwssb: water supply, sewage, drains, sanitary lines, water billing, borewell connections.
+- bbmp-swm: garbage collection, missed pickups, the auto-tipper, pourakarmikas,
+  street sweeping, dumping and black spots, segregation, debris, dead animals,
+  the SWM user fee.
 
-Input may be English, Kannada, Hindi, or a mix. Solid-waste, roads and potholes
-belong to BBMP but not to the tax wing — for those, return bbmp-tax and set
-confidence to "low", because our BBMP binding only covers the revenue desk.
+Input may be English, Kannada, Hindi, or a mix. Roads and potholes belong to
+BBMP but to neither of our two BBMP desks — for those, return bbmp-tax and set
+confidence to "low", so a person routes it onward.
+
+Waste and drains are the pair people mix up, and the distinction is where the
+thing physically is: solid waste on the road or uncollected at the door is
+bbmp-swm; anything flowing, blocked, smelling in a drain, manhole or sanitary
+line is bwssb. A choked drain full of rubbish is genuinely both — return both.
 
 Reply with JSON only:
 {"serviceIds":["bwssb"],"category":"Sewage overflow","restatement":"Sewage is overflowing near your building.","confidence":"high"}
@@ -157,6 +165,21 @@ same language the citizen used, addressed to them as "you". Never invent
 details the citizen did not give.`
 
 const KEYWORDS: Array<{ id: ServiceId; category: string; words: string[] }> = [
+  {
+    // Waste sits first because its vocabulary is the most distinctive. "kasa"
+    // and "ಕಸ" mean one thing only; "water" and "cut" turn up everywhere.
+    id: 'bbmp-swm',
+    category: 'Garbage collection',
+    words: [
+      'garbage', 'rubbish', 'trash', 'waste', 'wet waste', 'dry waste',
+      'segregat', 'tipper', 'auto tipper', 'pourakarmika', 'sweeper',
+      'sweeping', 'dump', 'dumping', 'black spot', 'blackspot', 'litter',
+      'debris', 'malba', 'compost', 'bin', 'not collected', 'pickup',
+      'pick up', 'dead animal',
+      'kasa', 'kasada', 'ಕಸ', 'ಕಸದ', 'ಗುಡಿಸ', 'ಪೌರಕಾರ್ಮಿಕ', 'ಕಸ ಸಂಗ್ರಹ',
+      'कचरा', 'कूड़ा', 'कचड़ा', 'गंदगी', 'सफाई', 'kachra', 'kooda',
+    ],
+  },
   {
     id: 'bwssb',
     category: 'Water or sewage',
@@ -217,7 +240,7 @@ function fallbackTriage(text: string): TriageResult {
   }
 }
 
-const VALID: ServiceId[] = ['bbmp-tax', 'bescom', 'bwssb']
+const VALID: ServiceId[] = ['bbmp-tax', 'bescom', 'bwssb', 'bbmp-swm']
 
 export async function triageGrievance(
   text: string,

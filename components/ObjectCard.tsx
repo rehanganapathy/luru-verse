@@ -70,7 +70,7 @@ export function ObjectCard({ property }: { property: PropertyObject }) {
       {/* Summary line before the detail. On a 360px screen the citizen should
           know whether they have a problem before they scroll. */}
       <section className="card card-pad stack stack-2">
-        <span className="eyebrow">Across all three</span>
+        <span className="eyebrow">Across all {property.bindings.length}</span>
         <span className={`headline tnum${totalOwed > 0 ? ' headline-warn' : ''}`}>
           {totalOwed > 0 ? (
             <>
@@ -83,16 +83,19 @@ export function ObjectCard({ property }: { property: PropertyObject }) {
         <span className="small ink2">
           {problems === 0
             ? 'No department will block a transfer. This is the easy case.'
-            : `${problems} of 3 departments will block a transfer until you clear something.`}
+            : `${problems} of ${property.bindings.length} departments will block a transfer until you clear something.`}
         </span>
       </section>
 
       <section className="stack stack-3">
         <div className="section-head">
           <h2 className="h2">Service bindings</h2>
-          <span className="xs muted">3 live · 4 declared</span>
+          <span className="xs muted">
+            {property.bindings.length} live · {VEHICLE_ADAPTERS.length} declared
+          </span>
         </div>
 
+        <div className="pair">
         {property.bindings.map((b) => {
           const s = STATUS[b.status]
           return (
@@ -129,6 +132,18 @@ export function ObjectCard({ property }: { property: PropertyObject }) {
                 {b.outstandingPaise === 0 && <span>nothing owing</span>}
               </div>
 
+              {b.note && <p className="small ink2">{b.note}</p>}
+
+              {b.serviceId === 'bbmp-swm' && (
+                <Link
+                  className="btn btn-sm btn-ghost"
+                  href={`/property/${encodeURIComponent(property.ePID)}/garbage`}
+                  style={{ alignSelf: 'flex-start' }}
+                >
+                  See the collection log
+                </Link>
+              )}
+
               {b.blockers.map((x) => (
                 <div key={x.code} className="next stack stack-2">
                   <span className="xs" style={{ fontWeight: 600, color: 'var(--block)' }}>
@@ -140,6 +155,8 @@ export function ObjectCard({ property }: { property: PropertyObject }) {
             </article>
           )
         })}
+
+        </div>
 
         {/* The seam, stated where a reviewer will actually see it. */}
         <details className="card card-pad">
@@ -163,18 +180,23 @@ export function ObjectCard({ property }: { property: PropertyObject }) {
             </ul>
             <p className="xs muted">
               These four are declarations against the same{' '}
-              <code className="mono">ServiceAdapter</code> interface the three
-              live bindings implement. We did not build them, and we are not
-              claiming we did. Two working bindings plus a clean seam is a
-              better proof than four built badly.
+              <code className="mono">ServiceAdapter</code> interface the{' '}
+              {property.bindings.length} live bindings implement. We did not
+              build them, and we are not claiming we did. The fourth live
+              binding — BBMP&rsquo;s waste wing — is what the claim looks like
+              when it is cashed: one config block and one line in the registry,
+              and nothing else in the app changed to admit it.
             </p>
           </div>
         </details>
       </section>
 
-      <section className="stack stack-3">
-        <Link className="btn btn-block" href={`/property/${encodeURIComponent(property.ePID)}/handover`}>
+      <section className="pair">
+        <Link className="btn btn-block pair-span" href={`/property/${encodeURIComponent(property.ePID)}/handover`}>
           {started ? 'Continue handover' : 'I bought this property'}
+        </Link>
+        <Link className="btn btn-ghost btn-block" href={`/property/${encodeURIComponent(property.ePID)}/garbage`}>
+          Check garbage collection
         </Link>
         <Link className="btn btn-ghost btn-block" href={`/property/${encodeURIComponent(property.ePID)}/grievance`}>
           Raise or view a complaint

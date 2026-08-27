@@ -72,10 +72,10 @@ export function WardMap({
             problem. */}
         <ellipse
           cx={LAKE.cx} cy={LAKE.cy} rx={LAKE.rx} ry={LAKE.ry}
-          fill="var(--map-lake)" stroke="#c3d4de" strokeWidth="1"
+          fill="var(--map-lake)" stroke="#c6d3d8" strokeWidth="1"
         />
         <text x={LAKE.cx} y={LAKE.cy + 4} textAnchor="middle"
-              fontSize="11" fill="#7c93a3">{LAKE.name}</text>
+              fontSize="11" fill="#7b8f99">{LAKE.name}</text>
 
         {/* Streets, drawn as casing + fill so they read as roads under the
             services rather than as more lines competing with them. */}
@@ -85,7 +85,7 @@ export function WardMap({
             const nb = NODE_BY_ID[b]
             return (
               <line key={`c-${a}-${b}`} x1={na.x} y1={na.y} x2={nb.x} y2={nb.y}
-                    stroke="#d6d0c4" strokeWidth="15" />
+                    stroke="#d8ddd7" strokeWidth="15" />
             )
           })}
           {ROADS.map(([a, b]) => {
@@ -93,7 +93,7 @@ export function WardMap({
             const nb = NODE_BY_ID[b]
             return (
               <line key={`f-${a}-${b}`} x1={na.x} y1={na.y} x2={nb.x} y2={nb.y}
-                    stroke="#f2eee6" strokeWidth="12" />
+                    stroke="#eef2ee" strokeWidth="12" />
             )
           })}
         </g>

@@ -20,6 +20,7 @@ const DEPT_NAME: Record<ServiceId, string> = {
   'bbmp-tax': 'BBMP (Revenue)',
   bescom: 'BESCOM',
   bwssb: 'BWSSB',
+  'bbmp-swm': 'BBMP (Solid Waste)',
 }
 
 type Triage = {
@@ -48,7 +49,12 @@ export function GrievanceTab({
 
   const mine = forProperty(ledger, property.ePID)
   const own = mine.grievances.filter((g) => g.propertyEPID === property.ePID)
-  const all = [...own, ...seeded].sort(
+  // A seeded thread the citizen has since appended to lives in BOTH lists —
+  // the collection log escalates onto the previous owner's complaint rather
+  // than opening a second one. The device's copy is the newer one, so it wins,
+  // and the seeded original drops out instead of appearing twice.
+  const ownIds = new Set(own.map((g) => g.id))
+  const all = [...own, ...seeded.filter((g) => !ownIds.has(g.id))].sort(
     (a, b) => +new Date(b.openedAt) - +new Date(a.openedAt),
   )
 

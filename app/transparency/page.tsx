@@ -2,7 +2,7 @@ import { Footer } from '@/components/ui'
 import { modelConfigured } from '@/lib/ai'
 
 export const metadata = {
-  title: "What's real and what's mocked — Handover",
+  title: "What's real and what's mocked — Luruverse",
 }
 
 type Row = { thing: string; state: 'real' | 'mock' | 'partial'; note: string }
@@ -32,6 +32,36 @@ const ROWS: Row[] = [
     thing: 'Which services are Sakala-notified',
     state: 'partial',
     note: 'Khata transfer and electricity name change are notified and we show clocks on them. We could not verify a notified BWSSB name-transfer timeframe, so that track carries no statutory countdown. We would rather show a gap than invent a guarantee.',
+  },
+  {
+    thing: 'BBMP solid waste user fee',
+    state: 'partial',
+    note: 'The mechanism is real: BBMP raises a solid-waste user fee on the property tax demand, against the same SAS number as the tax itself. That shared key is genuinely why a khata transfer carries it with no separate application — the one leg of a handover nobody had to build anything to fix. The slab bands and the amounts we show are invented; we could not verify the current notified figures and would rather say so than quote one.',
+  },
+  {
+    thing: 'Collection schedules, beats and routes',
+    state: 'mock',
+    note: 'Beat codes, auto-tipper route numbers, household counts and which weekday each stream is collected on are all invented. The three-stream split — wet daily, dry weekly, sanitary twice a week — follows BBMP\u2019s actual segregation model, because getting that wrong would make the screen unreadable to anyone who lives here.',
+  },
+  {
+    thing: 'The collection log floats its dates',
+    state: 'mock',
+    note: 'A deliberate break from the rest of the fixtures, and worth flagging. Missed collections are stored as \u201cN days before today\u201d rather than as calendar dates, so the log still shows a pattern whenever you open it instead of going blank a month after the deadline. The pattern is fixed and invented; the dates move. Each miss also snaps onto a day that stream is actually collected, so the fixture does not change shape depending on which weekday you visit.',
+  },
+  {
+    thing: 'Whether a collection actually happened',
+    state: 'mock',
+    note: 'This app cannot observe a tipper, and does not pretend to. Green marks are seeded departmental record; anything you mark is stored on your device as your observation and stays labelled as yours, including inside any complaint filed from that screen. BBMP tippers already carry GPS and its transfer stations already weigh loads, so this is a gap we can point at rather than one we can close.',
+  },
+  {
+    thing: 'Fee charged against service delivered',
+    state: 'partial',
+    note: 'The arithmetic is real and nobody currently does it: a monthly user fee divided by scheduled collections, multiplied by the ones that did not happen. The amounts are invented because the fee and the log are. It is NOT a refund entitlement — there is no rebate provision for non-collection the way Sakala s.5 gives you a real claim for a missed guarantee, and the screen says so rather than implying a right that does not exist.',
+  },
+  {
+    thing: 'Sakala and garbage',
+    state: 'partial',
+    note: 'The solid waste track carries no statutory clock, for a different reason than BWSSB\u2019s. There is nothing to file: the fee moves with the khata, so a countdown would be measuring an application that never existed. Complaint-redressal timeframes are a separate question we did not verify and therefore do not show.',
   },
   {
     thing: 'Ward and zone names',
@@ -109,7 +139,7 @@ export default function Transparency() {
   const live = modelConfigured()
 
   return (
-    <div className="stack stack-6">
+    <div className="col-wide stack stack-6 pane-in">
       <section className="stack stack-3">
         <div className="eyebrow">Full disclosure</div>
         <h1 className="display-lg">
@@ -123,7 +153,7 @@ export default function Transparency() {
         </p>
       </section>
 
-      <section className="stack stack-3">
+      <section className="pair">
         {ROWS.map((r) => (
           <div key={r.thing} className="card card-pad stack stack-2">
             <div className="row-between">
@@ -139,7 +169,7 @@ export default function Transparency() {
         ))}
       </section>
 
-      <section id="forward" className="stack stack-4">
+      <section id="forward" className="col stack stack-4">
         <h2 className="display">Three things we refused to build</h2>
 
         <div className="card card-pad stack stack-2">
@@ -207,7 +237,7 @@ export default function Transparency() {
         </div>
       </section>
 
-      <section className="stack stack-4">
+      <section className="col stack stack-4">
         <h2 className="display">Where the model does work</h2>
         <p className="ink2 small">
           Two places, and nowhere else. Navigation, search, layout and every
@@ -219,7 +249,10 @@ export default function Transparency() {
             Free text in Kannada, Hinglish or English resolved to a department
             and a category. This is the &ldquo;you never have to know which
             department owns your problem&rdquo; promise, and it is genuinely
-            hard without a model.
+            hard without a model. Waste and drains are the pair that proves it:
+            rubbish on the road is BBMP&rsquo;s waste wing, a blocked sanitary
+            line is BWSSB, and a choked drain full of rubbish is honestly both —
+            a distinction no keyword list holds on to across three languages.
           </p>
         </div>
         <div className="card card-pad stack stack-2">
@@ -245,7 +278,7 @@ export default function Transparency() {
         </div>
       </section>
 
-      <section className="stack stack-3">
+      <section className="col stack stack-3">
         <h2 className="display">Attribution</h2>
         <p className="small ink2">
           Independent hackathon prototype. Not affiliated with, endorsed by, or

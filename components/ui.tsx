@@ -34,15 +34,15 @@ export function Eyebrow({ children }: { children: ReactNode }) {
 
 export function Footer() {
   return (
-    <footer className="footer stack stack-2">
+    <footer className="footer">
       <p>
-        <strong>Handover</strong> is an independent hackathon prototype. Not
+        <strong>Luruverse</strong> is an independent hackathon prototype. Not
         affiliated with, endorsed by, or connected to BBMP, BESCOM, BWSSB, the
         Government of Karnataka or any of their systems. No government marks
         are used.
       </p>
-      <p>
-        All property, account, name and amount data shown is invented.{' '}
+      <p style={{ maxWidth: '32ch' }}>
+        Every invented value carries a marker that travels with it.{' '}
         <a href="/transparency">What&rsquo;s real and what&rsquo;s mocked →</a>
       </p>
     </footer>

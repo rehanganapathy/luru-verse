@@ -30,6 +30,12 @@ export const NOTIFIED_SERVICES: Record<
   // BWSSB name transfer is not in the Sakala notified list we could verify.
   // We say so rather than invent a guarantee.
   bwssb: null,
+  // Solid waste has no clock here for a different reason: there is nothing to
+  // file. Sakala measures one application against one deadline, and the SWM
+  // user fee moves with the khata without an application existing. A clock
+  // would be measuring nothing. The instrument that does bite on a recurring
+  // service is in lib/swm.ts — the fee charged against the service delivered.
+  'bbmp-swm': null,
 }
 
 export function isWeekend(d: Date): boolean {

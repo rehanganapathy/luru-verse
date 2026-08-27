@@ -2,7 +2,7 @@
 // Nothing in this file has a `personId`, and that is deliberate — see
 // /transparency and constraint 2 (forward verification only).
 
-export type ServiceId = 'bbmp-tax' | 'bescom' | 'bwssb'
+export type ServiceId = 'bbmp-tax' | 'bescom' | 'bwssb' | 'bbmp-swm'
 
 export type KhataType = 'A' | 'B' | 'e-Khata'
 
@@ -35,6 +35,12 @@ export type Binding = {
   lastUpdated: string
   /** Sakala guarantee, where the action maps to a notified service. */
   sakala?: SakalaClock
+  /**
+   * One line about how this binding behaves that the status field cannot
+   * carry. Used by the SWM binding to say the thing that matters most about
+   * it: there is nothing to file, because it is billed on the khata.
+   */
+  note?: string
 }
 
 export type SakalaClock = {
@@ -80,6 +86,8 @@ export type TransferTicket = {
   responsible: string
   blockers: Blocker[]
   sakala?: SakalaClock
+  /** Why this track looks the way it does, when that needs saying. */
+  note?: string
   history: TrackEvent[]
 }
 
