@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { findProperty, verifyChallenge, type FindState } from './actions'
 import { Footer, Mock } from '@/components/ui'
@@ -37,6 +37,37 @@ export default function Home() {
   const [answer, setAnswer] = useState('')
   const [challengeError, setChallengeError] = useState('')
   const [pending, start] = useTransition()
+  const heroRef = useRef<HTMLElement>(null)
+
+  // The header floats transparent on the photograph and has to go back to
+  // paper the moment the paper reaches it — white nav on a white sheet is
+  // unreadable, and this is the one screen in the product where the chrome
+  // sits on an image at all. The flip is a class on <body> because the header
+  // lives in the root layout, outside this tree.
+  //
+  // An observer rather than a scroll handler: the root is shrunk from the top
+  // by exactly the header's height, so "the band no longer intersects" is
+  // precisely "the band has passed under the header" — no threshold to guess,
+  // no work on the scroll thread. The header's height is read from the token
+  // so this cannot drift away from the CSS.
+  useEffect(() => {
+    const band = heroRef.current
+    if (!band) return
+    const h =
+      parseInt(
+        getComputedStyle(document.documentElement).getPropertyValue('--topbar-h'),
+        10,
+      ) || 60
+    const io = new IntersectionObserver(
+      ([entry]) => document.body.classList.toggle('hero-chrome', entry.isIntersecting),
+      { rootMargin: `-${h}px 0px 0px 0px`, threshold: 0 },
+    )
+    io.observe(band)
+    return () => {
+      io.disconnect()
+      document.body.classList.remove('hero-chrome')
+    }
+  }, [])
 
   function submitFind(e: React.FormEvent) {
     e.preventDefault()
@@ -67,10 +98,10 @@ export default function Home() {
       {/* The hero states the problem, over the building where the rules that
           created it were written. Nothing to click here on purpose — this
           screen has one job and it is comprehension. */}
-      <section className="hero-shell bleed">
+      <section className="hero-shell bleed" ref={heroRef}>
         <div className="hero-media" aria-hidden="true">
           <img
-            src="/vidhana-soudha.webp"
+            src="/vidhana-soudha-dither.jpg"
             alt=""
             fetchPriority="high"
             decoding="async"
