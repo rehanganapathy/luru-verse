@@ -6,9 +6,9 @@ import { findProperty, verifyChallenge, type FindState } from './actions'
 import { Footer, Mock } from '@/components/ui'
 
 const DEMO_KEYS = [
-  { label: 'Clean transfer', epid: 'MOCK-1704-0092-3311', doc: 'JYN-1-04412-2024-25', answer: '4412', note: 'Nothing owing. All four bindings move, and one of them needs no application at all.' },
-  { label: 'Arrears left behind', epid: 'MOCK-2210-4471-8802', doc: 'BSK-3-11876-2024-25', answer: '1876', note: 'The previous owner left a water bill, and two months of waste fee.' },
-  { label: 'B-Khata + name mismatch', epid: 'MOCK-3390-2255-1140', doc: 'KRP-2-07233-2023-24', answer: '7233', note: 'Meter still in a 2019 owner’s name. Dry waste has not been collected for 11 weeks.' },
+  { label: 'Clean transfer', epid: 'MOCK-1704-0092-3311', doc: 'JYN-1-04412-2024-25', answer: '3311', note: 'Nothing owing. All four bindings move, and one of them needs no application at all.' },
+  { label: 'Arrears left behind', epid: 'MOCK-2210-4471-8802', doc: 'BSK-3-11876-2024-25', answer: '8802', note: 'The previous owner left a water bill, and two months of waste fee.' },
+  { label: 'B-Khata + name mismatch', epid: 'MOCK-3390-2255-1140', doc: 'KRP-2-07233-2023-24', answer: '1140', note: 'Meter still in a 2019 owner’s name. Dry waste has not been collected for 11 weeks.' },
 ]
 
 // The four registers, and what each one calls the same flat. Three lines each,
