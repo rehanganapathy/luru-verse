@@ -237,16 +237,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
   flex: none;
   padding-right: var(--sp-4);
   font-family: var(--font-display);
-  font-size: var(--t-md);
+  font-size: var(--t-lg);
   font-weight: 700;
   letter-spacing: -0.03em;
   text-decoration: none;
+  color: var(--ink);
 }
 .wordmark span {
-  color: var(--ink-3);
+  color: var(--ink-2);
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 400;
+  font-size: 11px;
+  font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -270,9 +271,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
   gap: 7px;
   padding: 0 clamp(10px, 1.4vw, 18px);
   font-family: var(--font-mono);
-  font-size: var(--t-xs);
+  font-size: var(--t-sm);
+  font-weight: 500;
   letter-spacing: 0.02em;
-  color: var(--ink-2);
+  color: var(--ink);
   text-decoration: none;
   white-space: nowrap;
   transition: color var(--dur-1) var(--ease);
@@ -582,9 +584,11 @@ p a:hover, li a:hover { color: var(--accent); text-decoration-color: currentColo
    and the gutters are fluid now, so there is nothing left to snap. The shell's
    top padding went with the header when the header left the shell. */
 
-/* The landing opens flush against the header's rule — the dark band is the
-   next thing after it, with no paper in between. */
-.flush-top { margin-top: calc(-1 * var(--sp-6)); }
+/* The landing does not open under the header, it opens BEHIND it. The band is
+   pulled up past the topbar's own height as well as its margin, so the
+   photograph starts at the very top of the window and the header floats on
+   it. Costs one negative margin; buys the whole first screen. */
+.flush-top { margin-top: calc(-1 * (var(--topbar-h) + var(--sp-6))); }
 
 /* …and the argument below the band starts on paper with room around it. */
 .landing-body { padding-top: var(--sp-7); }
@@ -1255,8 +1259,10 @@ input[type='checkbox'] {
   align-items: flex-end;
   /* One source for the band's height: the fixed media layer below has to be
      exactly this tall, so it reads the token instead of repeating the
-     clamp. */
-  --hero-h: clamp(30rem, 84vh, 54rem);
+     clamp. Measured from the top of the WINDOW now — the band starts behind
+     the header rather than under it, so the header's 60px is inside this
+     number rather than added to it. */
+  --hero-h: clamp(32rem, 88vh, 56rem);
   height: var(--hero-h);
   background: #2a312c;
 }
@@ -1286,10 +1292,11 @@ input[type='checkbox'] {
   position: fixed;
   left: 0;
   right: 0;
-  /* The band starts flush under the topbar. Anchoring at the topbar's height
-     (not at 0) keeps the photograph out of the topbar's blurred strip, which
-     belongs to whatever is scrolling underneath it. */
-  top: var(--topbar-h);
+  /* Top of the window. The photograph runs up behind the header, which goes
+     transparent for as long as it is over the band (see .hero-chrome below) —
+     so the first screen is one picture with the chrome floating on it rather
+     than a picture in a slot beneath a bar. */
+  top: 0;
   height: var(--hero-h);
   z-index: -2;
   animation: fade var(--dur-2) var(--ease) both;
@@ -1298,10 +1305,13 @@ input[type='checkbox'] {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* The building is on the right of the frame and the sky is on the left,
-     which is where the headline goes. Vertically about a fifth down: anchoring
-     the crop to the bottom threw away the dome and kept the railings. */
-  object-position: 72% 20%;
+  /* The plate is 4:3 now, not 16:9, so the band crops a lot more off it
+     vertically and the old fifth-down anchor cut the building through the
+     columns. At 42% the whole dome survives and the arcade runs off the
+     bottom edge into the scrim, which is where the headline sits anyway.
+     Horizontally this is moot on a wide window — a 4:3 source covering a
+     2:1 band is width-driven, so there is nothing to slide. */
+  object-position: 50% 42%;
   filter: saturate(0.5) contrast(1.02) brightness(0.94);
 }
 
@@ -1327,6 +1337,64 @@ input[type='checkbox'] {
     rgba(10, 14, 12, 0.06) 52%,
     rgba(10, 14, 12, 0.22) 100%
   );
+}
+
+/* A second, short scrim just for the header strip. The page-length scrim
+   above is barely there across the top (the building has to survive), and
+   "barely there" is not enough to hold white nav text over whatever sky
+   happens to be behind it. This one is local: strong at the very top, gone by
+   twice the header's height, so it reads as the picture's own vignette rather
+   than as a bar. */
+.hero-shell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: calc(var(--topbar-h) * 2.4);
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 14, 12, 0.58) 0%,
+    rgba(10, 14, 12, 0.28) 46%,
+    rgba(10, 14, 12, 0) 100%
+  );
+}
+
+/* THE HEADER, OVER THE PHOTOGRAPH.
+   Set on <body> by the landing while the band is still under the header, and
+   removed the moment the paper scrolls up to meet it. Everything here is a
+   colour swap — no geometry moves, so the header does not shift by a pixel
+   when the class flips, and the two states cross-fade instead of cutting.
+
+   The black rule goes. It is a structural line for a page of paperwork and
+   there is no paperwork yet; drawing it across the picture is exactly the cut
+   this change exists to remove. */
+body.hero-chrome .topbar {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom-color: transparent;
+}
+body.hero-chrome .wordmark { color: #fff; }
+body.hero-chrome .wordmark span { color: rgba(255, 255, 255, 0.62); }
+body.hero-chrome .nav-link { color: rgba(255, 255, 255, 0.78); }
+body.hero-chrome .nav-link:hover { color: #fff; }
+/* Inverted with the rest of the band: on paper the CTA is the one black box,
+   on the photograph it is the one white one. Same job, same weight. */
+body.hero-chrome .topbar-cta { background: #fff; color: var(--ink); }
+
+.topbar,
+.topbar-cta,
+.wordmark,
+.wordmark span,
+.nav-link {
+  transition:
+    background-color var(--dur-2) var(--ease),
+    border-color var(--dur-2) var(--ease),
+    backdrop-filter var(--dur-2) var(--ease),
+    -webkit-backdrop-filter var(--dur-2) var(--ease),
+    color var(--dur-2) var(--ease);
 }
 
 /* The covering sheet. The hero photograph is pinned to the viewport, so every
@@ -1375,10 +1443,10 @@ input[type='checkbox'] {
 .hero .eyebrow { color: rgba(255, 255, 255, 0.72); }
 
 @media (max-width: 40rem) {
-  .hero-shell { --hero-h: clamp(26rem, 76vh, 34rem); }
+  .hero-shell { --hero-h: clamp(28rem, 80vh, 36rem); }
   /* Narrow and tall: cover is height-driven here, so the crop's full height
      survives and the horizontal window is what moves. Keep it on the dome. */
-  .hero-media img { object-position: 70% 20%; }
+  .hero-media img { object-position: 72% 42%; }
 }
 
 .hero-cap {

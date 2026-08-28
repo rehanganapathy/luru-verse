@@ -36,7 +36,7 @@ export default function RootLayout({
             sees, and the fixed media layer it lives in is the first thing the
             page paints. Preloading pulls it forward without blocking
             anything. */}
-        <link rel="preload" as="image" href="/vidhana-soudha.webp" />
+        <link rel="preload" as="image" href="/vidhana-soudha-dither.jpg" />
       </head>
       <body>
         <a className="skip" href="#main">
