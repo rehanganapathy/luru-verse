@@ -1577,3 +1577,491 @@ body.hero-chrome .topbar-cta { background: #fff; color: var(--ink); }
   .pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pair > .pair-span { grid-column: 1 / -1; }
 }
+
+/* --- the join, failing ----------------------------------------------------
+   Styles for components/JoinSequence.tsx. The band is the second half of the
+   dark opening: the photograph states the problem, this stages it, and the
+   find band arrives on paper underneath both.
+
+   COVERING-SHEET CONTRACT. The hero photograph is pinned to the viewport, so
+   this band — like every band after it — has to be full-bleed, positioned and
+   fully opaque, or the building shows through. See .find-band above.
+--------------------------------------------------------------------------- */
+
+.joinseq {
+  position: relative;
+  background: #10140f;
+  color: #fff;
+  /* Five beats. The pinned stage lasts exactly as long as the scroller is
+     taller than the window, so this height minus 100vh is the scrub distance:
+     roughly one viewport of scroll per beat, which is about a thumb-flick
+     each and slow enough to read the caption. */
+  --beats: 5;
+  min-height: calc(100vh * (var(--beats) + 1));
+}
+
+/* The stage pins itself to the window for the length of the scroller. Sticky
+   rather than fixed, so it releases on its own at both ends and there is no
+   scroll position at which the band is pinned but shouldn't be. */
+.joinseq-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  min-height: 34rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.joinseq-inner {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: var(--sp-5);
+  height: 100%;
+  padding-block: clamp(4rem, 9vh, 6rem) clamp(2rem, 6vh, 3.5rem);
+}
+
+/* The coordinate space. Everything inside is positioned in percent of this
+   box, and the connector SVG shares those exact numbers. */
+.joinseq-box {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* --- the flat ------------------------------------------------------------- */
+
+.joinseq-flat {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  /* Above the wires, below nothing else — the flat is the subject and the
+     failing joins pass behind it. */
+  z-index: 2;
+  transition:
+    opacity var(--dur-3) var(--ease),
+    transform var(--dur-3) var(--ease);
+}
+.joinseq-flat svg {
+  width: clamp(72px, 9vw, 112px);
+  height: auto;
+  overflow: visible;
+}
+.joinseq-plan {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 1.5;
+  stroke-linecap: square;
+  /* Drawn on, once, in beat 0. The dash length only has to exceed the path's
+     own length for the offset to hide it completely. */
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  transition: stroke-dashoffset 1.1s var(--ease);
+}
+.joinseq[data-beat] .joinseq-plan { stroke-dashoffset: 0; }
+
+.joinseq-flat-label {
+  font-family: var(--font-display);
+  font-size: var(--t-md);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.joinseq-flat-sub {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: rgba(255, 255, 255, 0.56);
+}
+
+/* Beat 4 hands the stage to the object card, so the plan steps back rather
+   than competing with it. */
+.joinseq[data-beat='4'] .joinseq-flat {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.94);
+}
+
+/* --- the four registers --------------------------------------------------- */
+
+.joinseq-key {
+  position: absolute;
+  left: var(--kx);
+  top: var(--ky);
+  width: clamp(9.5rem, 15vw, 13rem);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.04);
+  z-index: 3;
+  /* Held at the centre until beat 1, then translated out to the corner the
+     --kx/--ky pair names. Because left/top ARE the corner, "at the centre"
+     is expressed as a transform back to it — which keeps the corner position
+     in one place and means the collapse in beat 4 is the same trick again. */
+  transform: translate(-50%, -50%) translate(calc(50cqw - var(--kx)), calc(50cqh - var(--ky)));
+  opacity: 0;
+  transition:
+    transform 0.72s var(--ease) var(--kd),
+    opacity var(--dur-3) var(--ease) var(--kd),
+    border-color var(--dur-2) var(--ease),
+    background-color var(--dur-2) var(--ease);
+}
+/* Container query units let the transform above be written against the stage
+   box rather than the element, which is what `translate: %` would measure. */
+.joinseq-box { container-type: size; }
+
+.joinseq[data-beat='1'] .joinseq-key,
+.joinseq[data-beat='2'] .joinseq-key,
+.joinseq[data-beat='3'] .joinseq-key {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+/* And back in, as bindings on one object. */
+.joinseq[data-beat='4'] .joinseq-key {
+  transform: translate(-50%, -50%) translate(calc(50cqw - var(--kx)), calc(50cqh - var(--ky))) scale(0.86);
+  opacity: 0;
+}
+
+/* The counter the deed is standing at. The only lit thing on the stage, so
+   the walk reads as a sequence rather than four things blinking. */
+.joinseq-key[data-held='yes'] {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+}
+.joinseq-key[data-held='yes'] .joinseq-key-who { color: rgba(255, 255, 255, 0.9); }
+
+.joinseq-key-who {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.58);
+}
+.joinseq-key-val {
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  color: #fff;
+  word-break: break-all;
+}
+.joinseq-key-what {
+  font-size: var(--t-xs);
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* --- the joins that do not exist ------------------------------------------ */
+
+.joinseq-wires {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease);
+}
+.joinseq[data-beat='2'] .joinseq-wires { opacity: 1; }
+
+/* Only one of the two wire sets is ever in play. Kept as display rather than
+   opacity so the hidden set's infinite dash animation is not running behind
+   the visible one. */
+.joinseq-wires-narrow { display: none; }
+@media (max-width: 52rem) {
+  .joinseq-wires-wide { display: none; }
+  .joinseq-wires-narrow { display: block; }
+}
+
+.joinseq-wire {
+  fill: none;
+  /* NOT --breach, however much a failing join wants to be red. The rule this
+     product holds everywhere else is that green, amber and red mean the state
+     of a track and nothing else, so a reviewer can trust a colour on sight. A
+     join that cannot be made is not a track state. The line carries its
+     meaning by retracting instead. */
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  /* Held fully retracted. pathLength is not set, so the offset has to exceed
+     the longest diagonal in the box; 200 covers a 100x100 viewBox. */
+  stroke-dashoffset: 200;
+}
+/* Draw, stall short of arriving, snap back — and keep doing it for as long as
+   beat 2 is on screen, because the point is that this never completes. */
+.joinseq[data-beat='2'] .joinseq-wire {
+  animation: joinseq-fail 2.6s var(--ease) infinite both;
+}
+@keyframes joinseq-fail {
+  0%   { stroke-dashoffset: 200; opacity: 0; }
+  12%  { opacity: 1; }
+  46%  { stroke-dashoffset: 96; opacity: 1; }
+  /* The stall. It gets most of the way and cannot finish. */
+  58%  { stroke-dashoffset: 92; opacity: 1; }
+  78%  { stroke-dashoffset: 200; opacity: 0.35; }
+  100% { stroke-dashoffset: 200; opacity: 0; }
+}
+
+/* --- the deed, and whoever is carrying it --------------------------------- */
+
+/* Parked clear of the register it has arrived at, not on top of it. The
+   left/top the component sets is the counter's own centre, so the whole deed
+   is lifted by its own height plus half a card — otherwise the count line
+   lands exactly on the register's department label and the two become
+   unreadable together. One transform on the container, not on each child:
+   with a transform on both, the chip and its caption move independently and
+   the pair stops reading as one object being carried. */
+.joinseq-deed {
+  position: absolute;
+  left: var(--dx);
+  top: var(--dy);
+  transform: translate(-50%, -50%) translateY(-4.9rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    left 0.66s var(--ease),
+    top 0.66s var(--ease),
+    opacity var(--dur-3) var(--ease);
+}
+.joinseq[data-beat='3'] .joinseq-deed { opacity: 1; }
+
+.joinseq-deed-paper {
+  padding: 7px 12px;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+  box-shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.8);
+}
+.joinseq-deed-count {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
+}
+
+/* --- beat 4: one object --------------------------------------------------- */
+
+.joinseq-object {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(30rem, 92%);
+  transform: translate(-50%, -50%) scale(0.96);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.06);
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--dur-3) var(--ease) 0.12s,
+    transform var(--dur-3) var(--ease) 0.12s;
+}
+.joinseq[data-beat='4'] .joinseq-object {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.joinseq-object-head { display: flex; flex-direction: column; gap: 2px; }
+.joinseq-object-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.56);
+}
+.joinseq-object-title {
+  font-family: var(--font-display);
+  font-size: var(--t-md);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.joinseq-object-rows { list-style: none; margin: 0; padding: 0; }
+.joinseq-object-rows li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: 9px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: var(--t-sm);
+  color: rgba(255, 255, 255, 0.74);
+  /* Each row arrives after the card, in the order the registers were visited,
+     so the collapse reads as four things landing rather than a card fading. */
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity var(--dur-3) var(--ease),
+    transform var(--dur-3) var(--ease);
+}
+.joinseq[data-beat='4'] .joinseq-object-rows li {
+  opacity: 1;
+  transform: none;
+}
+.joinseq-object-rows .mono { color: #fff; font-size: var(--t-xs); }
+
+/* --- the caption rail ----------------------------------------------------- */
+
+.joinseq-caption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  max-width: 62ch;
+}
+.joinseq-lead {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 600;
+  letter-spacing: -0.024em;
+  line-height: 1.2;
+}
+.joinseq-body {
+  font-size: var(--t-base);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
+}
+/* Both lines are replaced wholesale each beat. Keying the animation on the
+   beat via the attribute — rather than a React key — means no remount and no
+   layout thrash, just a re-run of the fade. */
+.joinseq[data-beat='0'] .joinseq-caption > p,
+.joinseq[data-beat='1'] .joinseq-caption > p,
+.joinseq[data-beat='2'] .joinseq-caption > p,
+.joinseq[data-beat='3'] .joinseq-caption > p,
+.joinseq[data-beat='4'] .joinseq-caption > p {
+  animation: joinseq-caption var(--dur-3) var(--ease) both;
+}
+@keyframes joinseq-caption {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Five ticks, filling as the beats pass. Not a scrollbar — a reader needs to
+   know this band ends, and roughly when. */
+.joinseq-progress { display: flex; gap: 5px; }
+.joinseq-progress i {
+  width: 26px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.22);
+  transition: background-color var(--dur-2) var(--ease);
+}
+.joinseq-progress i[data-on='yes'] { background: #fff; }
+
+/* --- narrow ---------------------------------------------------------------
+   Four corners need two axes of room and a phone has one. The registers stack
+   into a column, the flat moves to the top of it, and the failing joins run
+   vertically down the stack — same argument, one axis. The x/y values on the
+   elements are overridden here rather than in the component, so the layout
+   stays a stylesheet decision. */
+@media (max-width: 52rem) {
+  .joinseq-stage { min-height: 40rem; }
+  .joinseq-flat { top: 12%; }
+  .joinseq-flat svg { width: 60px; }
+
+  /* One column. The positions come from the component's narrowY, so this is a
+     swap of which pair of custom properties is in play rather than a second
+     set of coordinates that has to be kept in step with the first. */
+  .joinseq-key {
+    width: min(20rem, 84%);
+    --kx: var(--kx-narrow);
+    --ky: var(--ky-narrow);
+  }
+  .joinseq-deed { --dx: var(--dx-narrow); --dy: var(--dy-narrow); }
+
+  /* The registers are stacked 18% of the stage apart here — about 40px of gap
+     between cards — which is less room than the desktop lift assumes. The deed
+     lies down into a single row so it fits in that gap, and parks just above
+     the card it has arrived at rather than on the card above. */
+  .joinseq-deed {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    transform: translate(-50%, -50%) translateY(-3.2rem);
+    z-index: 6;
+  }
+  .joinseq-deed-paper { box-shadow: 0 10px 26px -8px rgba(0, 0, 0, 0.9); }
+
+  .joinseq-object { width: 92%; padding: var(--sp-4); }
+  .joinseq-object-rows li { flex-direction: column; gap: 2px; align-items: flex-start; }
+}
+
+/* --- no scrub -------------------------------------------------------------
+   No JavaScript, or reduced motion asked for. The stage stops pinning, the
+   beats stop existing, and the band renders the end state — the four
+   registers as rows on one object — with the argument carried by the caption
+   list instead of by motion. Nothing here is only available to people who can
+   watch it move. */
+.joinseq[data-scrub='off'] {
+  min-height: 0;
+  padding-block: var(--sp-7);
+}
+.joinseq[data-scrub='off'] .joinseq-stage {
+  position: static;
+  height: auto;
+  min-height: 0;
+}
+.joinseq[data-scrub='off'] .joinseq-inner { height: auto; padding-block: 0; }
+.joinseq[data-scrub='off'] .joinseq-box {
+  height: auto;
+  container-type: normal;
+  display: grid;
+  gap: var(--sp-4);
+}
+.joinseq[data-scrub='off'] .joinseq-wires,
+.joinseq[data-scrub='off'] .joinseq-wires-narrow,
+.joinseq[data-scrub='off'] .joinseq-deed,
+.joinseq[data-scrub='off'] .joinseq-flat { display: none; }
+.joinseq[data-scrub='off'] .joinseq-key {
+  position: static;
+  width: 100%;
+  transform: none;
+  opacity: 1;
+}
+.joinseq[data-scrub='off'] .joinseq-object {
+  position: static;
+  width: 100%;
+  transform: none;
+  opacity: 1;
+}
+.joinseq[data-scrub='off'] .joinseq-object-rows li { opacity: 1; transform: none; }
+.joinseq[data-scrub='off'] .joinseq-caption > p { animation: none; }
+/* Five arguments in a column instead of one at a time on a rail. */
+.joinseq[data-scrub='off'] .joinseq-caption { gap: var(--sp-5); max-width: 68ch; }
+.joinseq-caption-step { display: flex; flex-direction: column; gap: var(--sp-2); }
+.joinseq-caption-step .joinseq-lead { font-size: var(--t-md); }
+.joinseq[data-scrub='off'] .joinseq-progress { display: none; }
+@media (min-width: 52rem) {
+  .joinseq[data-scrub='off'] .joinseq-box { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .joinseq[data-scrub='off'] .joinseq-object { grid-column: 1 / -1; }
+}
+
+/* Visually hidden, still read aloud. The sequence is decoration over a claim
+   that has to survive without it. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

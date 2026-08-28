@@ -1,11 +1,67 @@
+import Link from 'next/link'
 import { Footer } from '@/components/ui'
 import { modelConfigured } from '@/lib/ai'
+import { PROPERTIES, BEATS } from '@/lib/fixtures'
+import { mockGscNumber } from '@/lib/sakala'
+import { LINES, WORKS, COVERAGE_GAPS } from '@/lib/dept'
+import { rupees } from '@/lib/format'
 
 export const metadata = {
   title: "What's real and what's mocked — Luruverse",
 }
 
-type Row = { thing: string; state: 'real' | 'mock' | 'partial'; note: string }
+// Where a row is marked mocked, show the actual invented value next to the
+// field it fills. Values are derived live from the fixtures, so this page
+// stays exact when the fixtures change.
+type Row = {
+  thing: React.ReactNode
+  state: 'real' | 'mock' | 'partial'
+  note: string
+  /** The actual invented value(s), placed next to the field they fill. */
+  values?: string[]
+  /** Source file where the invented values live. */
+  src?: string
+  /** For partial rows: what is real vs what is invented, split out. */
+  realPart?: string
+  inventedPart?: string
+}
+
+const IDENTIFIER_VALUES: string[] = PROPERTIES.flatMap((p) => [
+  `ePID — ${p.ePID}`,
+  `Registration doc — ${p.registrationDocNo}`,
+  ...p.bindings.map((b) => `${b.accountLabel} — ${b.accountRef}`),
+])
+
+const ARREAR_VALUES: string[] = PROPERTIES.flatMap((p) =>
+  p.bindings
+    .filter((b) => b.outstandingPaise > 0)
+    .map((b) => `${rupees(b.outstandingPaise)} — ${b.displayName} (${p.ownerOnRecord})`),
+)
+
+const FEE_VALUES: string[] = PROPERTIES.map((p) => {
+  const b = BEATS[p.ePID]
+  return `${rupees(b.monthlyUserFeePaise)}/month — ${p.builtUpAreaSqFt.toLocaleString('en-IN')} sq ft, ${p.locality}`
+})
+
+const BEAT_VALUES: string[] = PROPERTIES.map((p) => {
+  const b = BEATS[p.ePID]
+  return `${b.beatCode} · ${b.routeCode} · ${b.households} households (${p.ward})`
+})
+
+const LINE_VALUES: string[] = [
+  ...LINES.map((l) => `${l.label} — ${l.spec}, laid ${l.laidYear}, ${l.condition}`),
+]
+
+const WORK_VALUES: string[] = WORKS.map(
+  (w) => `${w.id} · ${w.ref} · ₹${w.costLakh} lakh`,
+)
+
+const GAP_VALUES: string[] = COVERAGE_GAPS.map(
+  (g) =>
+    `${g.stretch} — ${g.unassessedConnections} connections ≈ ₹${g.estAnnualRevenueLakh.toFixed(1)} lakh/yr`,
+)
+
+const GSC_SAMPLE = "mockGscNumber('GRV-MOCK-40912')"
 
 const ROWS: Row[] = [
   {
@@ -31,17 +87,36 @@ const ROWS: Row[] = [
   {
     thing: 'Which services are Sakala-notified',
     state: 'partial',
-    note: 'Khata transfer and electricity name change are notified and we show clocks on them. We could not verify a notified BWSSB name-transfer timeframe, so that track carries no statutory countdown. We would rather show a gap than invent a guarantee.',
+    note: '',
+    realPart:
+      'Khata transfer and electricity name change are notified. The Sakala Act itself is real: the guaranteed timeframe in working days, the 15-digit GSC number, and the compensation mechanism all exist.',
+    inventedPart:
+      'We could not verify a notified BWSSB name-transfer timeframe, so that track carries no statutory countdown.',
+    src: 'lib/sakala.ts',
   },
   {
     thing: 'BBMP solid waste user fee',
     state: 'partial',
-    note: 'The mechanism is real: BBMP raises a solid-waste user fee on the property tax demand, against the same SAS number as the tax itself. That shared key is genuinely why a khata transfer carries it with no separate application — the one leg of a handover nobody had to build anything to fix. The slab bands and the amounts we show are invented; we could not verify the current notified figures and would rather say so than quote one.',
+    note: '',
+    realPart:
+      'The mechanism is real: BBMP raises a solid-waste user fee on the property tax demand, against the same SAS number as the tax itself. That shared key is genuinely why a khata transfer carries it with no separate application.',
+    inventedPart:
+      'Slab bands and amounts below are invented; we could not verify the current notified figures.',
+    values: FEE_VALUES,
+    src: 'lib/fixtures.ts (BEATS)',
   },
   {
     thing: 'Collection schedules, beats and routes',
     state: 'mock',
-    note: 'Beat codes, auto-tipper route numbers, household counts and which weekday each stream is collected on are all invented. The three-stream split — wet daily, dry weekly, sanitary twice a week — follows BBMP\u2019s actual segregation model, because getting that wrong would make the screen unreadable to anyone who lives here.',
+    note: 'Beat codes, auto-tipper route numbers, household counts and which weekday each stream is collected on are all invented. The three-stream split — wet daily, dry weekly, sanitary twice a week — follows BBMP’s actual segregation model, because getting that wrong would make the screen unreadable to anyone who lives here.',
+    values: BEAT_VALUES,
+    src: 'lib/fixtures.ts (BEATS)',
+  },
+  {
+    thing: 'The collection log floats its dates',
+    state: 'mock',
+    note: 'A deliberate break from the rest of the fixtures, and worth flagging. Missed collections are stored as “N days before today” rather than as calendar dates, so the log still shows a pattern whenever you open it instead of going blank a month after the deadline. The pattern is fixed and invented; the dates move. Each miss also snaps onto a day that stream is actually collected, so the fixture does not change shape depending on which weekday you visit.',
+    src: 'lib/fixtures.ts (seededMisses)',
   },
   {
     thing: 'The collection log floats its dates',
@@ -56,12 +131,20 @@ const ROWS: Row[] = [
   {
     thing: 'Fee charged against service delivered',
     state: 'partial',
-    note: 'The arithmetic is real and nobody currently does it: a monthly user fee divided by scheduled collections, multiplied by the ones that did not happen. The amounts are invented because the fee and the log are. It is NOT a refund entitlement — there is no rebate provision for non-collection the way Sakala s.5 gives you a real claim for a missed guarantee, and the screen says so rather than implying a right that does not exist.',
+    note: '',
+    realPart:
+      'The arithmetic is real and nobody currently does it: a monthly user fee divided by scheduled collections, multiplied by the ones that did not happen.',
+    inventedPart:
+      'The amounts are invented because the fee and the log are. It is NOT a refund entitlement — there is no rebate provision for non-collection the way Sakala s.5 gives you a real claim for a missed guarantee, and the screen says so rather than implying a right that does not exist.',
   },
   {
     thing: 'Sakala and garbage',
     state: 'partial',
-    note: 'The solid waste track carries no statutory clock, for a different reason than BWSSB\u2019s. There is nothing to file: the fee moves with the khata, so a countdown would be measuring an application that never existed. Complaint-redressal timeframes are a separate question we did not verify and therefore do not show.',
+    note: '',
+    realPart:
+      'The solid waste track carries no statutory clock, for a different reason than BWSSB’s. There is nothing to file: the fee moves with the khata, so a countdown would be measuring an application that never existed.',
+    inventedPart:
+      'Complaint-redressal timeframes are a separate question we did not verify and therefore do not show.',
   },
   {
     thing: 'Ward and zone names',
@@ -69,39 +152,56 @@ const ROWS: Row[] = [
     note: 'BBMP ward and zone names are public administrative facts. Using fake ones would have made the interface less legible, not more honest.',
   },
   {
-    thing: 'Every property in the app',
+    thing: <Link href="/#demo">Every property in the app</Link>,
     state: 'mock',
-    note: 'Three seeded fixtures. Addresses, buildings and owners are invented. No real property, no real owner, no real transaction.',
+    note: 'Three seeded fixtures, listed on the landing page — the pointer above jumps to them. Addresses, buildings and owners are invented. No real property, no real owner, no real transaction.',
+    values: PROPERTIES.map((p) => `${p.address} — ${p.ownerOnRecord}`),
+    src: 'lib/fixtures.ts (PROPERTIES)',
   },
   {
     thing: 'ePIDs, SAS numbers, RR numbers, document numbers',
     state: 'mock',
     note: 'Shaped like the real ones so field lengths and formats in the UI are honest, but every one is prefixed MOCK and none was ever issued.',
+    values: IDENTIFIER_VALUES,
+    src: 'lib/fixtures.ts (PROPERTIES)',
   },
   {
     thing: 'GSC acknowledgement numbers',
     state: 'mock',
     note: 'Derived deterministically from the ticket id so they stay stable across reloads. Not issued by Sakala.',
+    values: [`${GSC_SAMPLE} → ${mockGscNumber('GRV-MOCK-40912')}`],
+    src: 'lib/sakala.ts (mockGscNumber)',
   },
   {
     thing: 'Outstanding amounts and arrears',
     state: 'mock',
     note: 'Invented. Chosen to be plausible: the ₹4,180 water arrear is the kind of number that actually surfaces at a counter after registration.',
+    values: ARREAR_VALUES,
+    src: 'lib/fixtures.ts (PROPERTIES.bindings)',
   },
   {
-    thing: 'The ward map, pipes and feeders',
+    thing: <Link href="/dept">The ward map, pipes and feeders</Link>,
     state: 'mock',
-    note: 'Every coordinate, diameter, laid-year and condition rating is invented. It is a schematic drawn from a small graph in lib/dept.ts, not survey geometry, and it is not the shape of Padmanabhanagar. No tile provider is contacted.',
+    note: 'Every coordinate, diameter, laid-year and condition rating is invented. It is a schematic drawn from a small graph in lib/dept.ts, not survey geometry, and it is not the shape of Padmanabhanagar. No tile provider is contacted. The pointer above opens the screen this data renders.',
+    values: LINE_VALUES,
+    src: 'lib/dept.ts (LINES)',
   },
   {
     thing: 'Works, tenders and costs',
     state: 'mock',
     note: 'Invented work orders, tender references and figures in lakh. Shaped to be plausible; none corresponds to a real BWSSB or BESCOM work.',
+    values: WORK_VALUES,
+    src: 'lib/dept.ts (WORKS)',
   },
   {
     thing: 'Assessment gap counts',
     state: 'partial',
-    note: 'The numbers are invented. The mechanism is real: a utility connection at an address with no matching tax assessment is a genuine signal, and no system currently joins those two rolls because there is no shared key to join them on.',
+    note: '',
+    realPart:
+      'The mechanism is real: a utility connection at an address with no matching tax assessment is a genuine signal, and no system currently joins those two rolls because there is no shared key to join them on.',
+    inventedPart: 'The counts and revenue estimates below are invented.',
+    values: GAP_VALUES,
+    src: 'lib/dept.ts (COVERAGE_GAPS)',
   },
   {
     thing: 'Department APIs',
@@ -137,6 +237,11 @@ const ROWS: Row[] = [
 
 export default function Transparency() {
   const live = modelConfigured()
+  const counts = {
+    real: ROWS.filter((r) => r.state === 'real').length,
+    mock: ROWS.filter((r) => r.state === 'mock').length,
+    partial: ROWS.filter((r) => r.state === 'partial').length,
+  }
 
   return (
     <div className="col-wide stack stack-6 pane-in">
@@ -151,11 +256,15 @@ export default function Transparency() {
           Every invented value in this app carries a small dotted underline and
           a dot. This page is the complete list behind that marker.
         </p>
+        <p className="small muted">
+          {counts.real} real · {counts.mock} mocked · {counts.partial} partly
+          real
+        </p>
       </section>
 
       <section className="pair">
-        {ROWS.map((r) => (
-          <div key={r.thing} className="card card-pad stack stack-2">
+        {ROWS.map((r, i) => (
+          <div key={i} className="card card-pad stack stack-2">
             <div className="row-between">
               <h2 className="h3">{r.thing}</h2>
               <span
@@ -164,7 +273,32 @@ export default function Transparency() {
                 {r.state === 'real' ? 'Real' : r.state === 'mock' ? 'Mocked' : 'Partly real'}
               </span>
             </div>
-            <p className="small ink2">{r.note}</p>
+            {r.realPart && (
+              <p className="small ink2">
+                <strong>Real:</strong> {r.realPart}
+              </p>
+            )}
+            {r.inventedPart && (
+              <p className="small ink2">
+                <strong>Invented:</strong> {r.inventedPart}
+              </p>
+            )}
+            {r.note && <p className="small ink2">{r.note}</p>}
+            {r.values && (
+              <ul
+                className="mono xs muted"
+                style={{ listStyle: 'none', padding: 0, margin: 0 }}
+              >
+                {r.values.map((v) => (
+                  <li key={v}>{v}</li>
+                ))}
+              </ul>
+            )}
+            {r.src && (
+              <p className="mono xs muted" style={{ marginTop: 'auto' }}>
+                → {r.src}
+              </p>
+            )}
           </div>
         ))}
       </section>

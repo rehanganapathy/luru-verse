@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { findProperty, verifyChallenge, type FindState } from './actions'
 import { Footer, Mock } from '@/components/ui'
+import { JoinSequence } from '@/components/JoinSequence'
 
 const DEMO_KEYS = [
   { label: 'Clean transfer', epid: 'MOCK-1704-0092-3311', doc: 'JYN-1-04412-2024-25', answer: '3311', note: 'Nothing owing. All four bindings move, and one of them needs no application at all.' },
@@ -11,15 +12,10 @@ const DEMO_KEYS = [
   { label: 'B-Khata + name mismatch', epid: 'MOCK-3390-2255-1140', doc: 'KRP-2-07233-2023-24', answer: '1140', note: 'Meter still in a 2019 owner’s name. Dry waste has not been collected for 11 weeks.' },
 ]
 
-// The four registers, and what each one calls the same flat. Three lines each,
-// because the value on its own does not make the point — you have to be able to
-// see which department is holding it.
-const FOUR_KEYS = [
-  { who: 'Sub-registrar', val: 'JYN-1-04412-2024-25', what: 'Registration document' },
-  { who: 'BBMP', val: '2024-25-MOCK-88412', what: 'Property tax ePID' },
-  { who: 'BESCOM', val: 'M7-MOCK-441209', what: 'Electricity RR number' },
-  { who: 'BWSSB', val: '0084-MOCK-11207', what: 'Water RR number' },
-]
+// The four registers used to be a static row here, under the heading "No two of
+// these can be derived from another". They now live in <JoinSequence/>, which
+// stages the same four values instead of asserting them — see that component's
+// header for why the row was not earning its place.
 
 // The seeded case, stated on the landing rather than only behind the search —
 // the three states this product has to be able to show, and the colour each
@@ -37,7 +33,6 @@ export default function Home() {
   const [answer, setAnswer] = useState('')
   const [challengeError, setChallengeError] = useState('')
   const [pending, start] = useTransition()
-  const heroRef = useRef<HTMLElement>(null)
 
   // The header floats transparent on the photograph and has to go back to
   // paper the moment the paper reaches it — white nav on a white sheet is
@@ -50,19 +45,32 @@ export default function Home() {
   // precisely "the band has passed under the header" — no threshold to guess,
   // no work on the scroll thread. The header's height is read from the token
   // so this cannot drift away from the CSS.
+  //
+  // There are two dark bands now, not one — the photograph and the join
+  // sequence run together as a single dark opening — so the flip is keyed on
+  // "any dark band is still under the header" rather than on one element.
+  // Both are observed and the intersecting ones counted; the header returns to
+  // paper only when the last of them has passed.
   useEffect(() => {
-    const band = heroRef.current
-    if (!band) return
+    const bands = document.querySelectorAll<HTMLElement>('.hero-shell, .joinseq')
+    if (!bands.length) return
     const h =
       parseInt(
         getComputedStyle(document.documentElement).getPropertyValue('--topbar-h'),
         10,
       ) || 60
+    const dark = new Set<Element>()
     const io = new IntersectionObserver(
-      ([entry]) => document.body.classList.toggle('hero-chrome', entry.isIntersecting),
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) dark.add(e.target)
+          else dark.delete(e.target)
+        }
+        document.body.classList.toggle('hero-chrome', dark.size > 0)
+      },
       { rootMargin: `-${h}px 0px 0px 0px`, threshold: 0 },
     )
-    io.observe(band)
+    bands.forEach((b) => io.observe(b))
     return () => {
       io.disconnect()
       document.body.classList.remove('hero-chrome')
@@ -98,7 +106,7 @@ export default function Home() {
       {/* The hero states the problem, over the building where the rules that
           created it were written. Nothing to click here on purpose — this
           screen has one job and it is comprehension. */}
-      <section className="hero-shell bleed" ref={heroRef}>
+      <section className="hero-shell bleed">
         <div className="hero-media" aria-hidden="true">
           <img
             src="/vidhana-soudha-dither.jpg"
@@ -119,6 +127,13 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* The second half of the dark opening. The photograph states the
+          problem; this stages it, and hands over to paper at the find band.
+          Opaque and full-bleed, like every band after the hero, because the
+          photograph is pinned to the viewport and everything downstream has to
+          paint over it. */}
+      <JoinSequence />
 
       {/* The only action on this page, in its own band. Step two replaces it in
           place rather than opening somewhere else, so the thing you were doing
@@ -163,6 +178,30 @@ export default function Home() {
                     {pending ? 'Looking up…' : 'Open it'}
                   </button>
                 </form>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 'var(--sp-2)',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span className="xs muted">Try one:</span>
+                  {DEMO_KEYS.map((d) => (
+                    <button
+                      key={d.epid}
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => {
+                        setQuery(d.doc)
+                        if (state.step === 'error') setState({ step: 'idle' })
+                        document.getElementById('query')?.focus()
+                      }}
+                    >
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
                 {state.step === 'error' ? (
                   <p id="find-error" className="small" style={{ color: 'var(--breach)' }} role="alert">
                     {state.message}
@@ -213,9 +252,45 @@ export default function Home() {
                     }}
                     aria-describedby="answer-hint"
                   />
-                  <p id="answer-hint" className="xs muted">
-                    {state.found.challengeHint}
-                  </p>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      justifyContent: 'space-between',
+                      gap: 'var(--sp-2)',
+                    }}
+                  >
+                    <p id="answer-hint" className="xs muted">
+                      {state.found.challengeHint}
+                    </p>
+                    {DEMO_KEYS.find((d) => d.epid === state.found.epid) && (
+                      <button
+                        type="button"
+                        className="xs"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          padding: 0,
+                          textDecoration: 'underline',
+                          textUnderlineOffset: '2px',
+                          color: 'var(--ink-3)',
+                          fontFamily: 'inherit',
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                        }}
+                        onClick={() => {
+                          setAnswer(
+                            DEMO_KEYS.find((d) => d.epid === state.found.epid)!
+                              .answer,
+                          )
+                          setChallengeError('')
+                          document.getElementById('answer')?.focus()
+                        }}
+                      >
+                        Fill for this demo →
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {challengeError && (
                   <p className="small" style={{ color: 'var(--breach)' }} role="alert">
@@ -248,28 +323,6 @@ export default function Home() {
           gutters. The bleed-inner keeps the content on the shell's measure. */}
       <div className="landing-body bleed pane-in">
         <div className="bleed-inner stack stack-7">
-        <section id="problem" className="stack stack-2">
-          <div className="section-head">
-            <h2 className="display">No two of these can be derived from another</h2>
-            <span className="eyebrow">One flat · four keys</span>
-          </div>
-          <div className="keys-mini">
-            {FOUR_KEYS.map((k) => (
-              <div className="key-mini" key={k.who}>
-                <span>{k.who}</span>
-                <span>
-                  <Mock what="Mock identifier">{k.val}</Mock>
-                </span>
-                <span>{k.what}</span>
-              </div>
-            ))}
-          </div>
-          <p className="small muted" style={{ maxWidth: '72ch' }}>
-            There is no shared key, so today you are the shared key. That is the
-            whole problem, and it is not a technical one.
-          </p>
-        </section>
-
         <section id="tracks" className="stack stack-2">
           <div className="section-head">
             <h2 className="display">Every request gets a clock and a name</h2>
